@@ -8,11 +8,13 @@ import { setSearch } from "../../redux/slices/FileSlice";
 import { background, nDark, accent, border } from "../variables/Colors";
 import { useState, useEffect } from "react";
 import Search from "./Search";
+import axios from "../api/axios";
 
 export default function NavBar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isSearchPage = location.pathname === "/Search";
+  const isGalleryPage = location.pathname === "/Gallery";
   const files = useSelector((state) => state.allFiles.value);
   const [openDots, setOpenDots] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(false);
@@ -67,6 +69,31 @@ export default function NavBar() {
       }, 500);
     }
   }, [isSearchPage]);
+
+  useEffect(() => {
+    if (!isGalleryPage) {
+      localStorage.removeItem("displayedImage");
+      localStorage.removeItem("displayedVideo");
+    }
+  });
+
+  const handleLogout = async () => {
+    try {
+      // Clear the cookies on the server
+      await axios.get("/sanctum/csrf-cookie");
+      await axios.post("/logout");
+
+      // Clear the local storage
+      localStorage.removeItem("user_id");
+      localStorage.removeItem("user_email");
+      localStorage.removeItem("user_name");
+      // Navigate to the login page
+      navigate("/");
+      setOpenDots(false);
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
+  };
   return (
     <Grid
       conteiner="true"
@@ -184,11 +211,7 @@ export default function NavBar() {
                   textAlign: "center",
                   padding: 5,
                 }}
-                onPress={() => {
-                  localStorage.removeItem("user_id");
-                  navigate("/");
-                  setOpenDots(false);
-                }}
+                onPress={handleLogout}
               >
                 {localStorage.getItem("user_id") ? (
                   <Appbar.Content title="Logout" />
@@ -200,7 +223,7 @@ export default function NavBar() {
           ))
         : (setTimeout(() => {
             document.querySelector(".dotsMenu").style.top = "-2px";
-          }, 200),
+          }, 1),
           (
             <Grid
               item="true"
@@ -234,11 +257,7 @@ export default function NavBar() {
                   textAlign: "center",
                   padding: 5,
                 }}
-                onPress={() => {
-                  localStorage.removeItem("user_id");
-                  navigate("/");
-                  setOpenDots(false);
-                }}
+                onPress={handleLogout}
               >
                 {localStorage.getItem("user_id") ? (
                   <Appbar.Content title="Logout" />

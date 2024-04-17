@@ -1,5 +1,5 @@
 import React from "react";
-import Grid from "@mui/material/Unstable_Grid2";
+import { Grid } from "@mui/material";
 import { Card } from "react-native-paper";
 import { Platform, Text } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -19,7 +19,7 @@ export default function AllFolders() {
   const files = useSelector((state) => state.allFiles.value);
 
   const [positions, setPositions] = useState(
-    JSON.parse(localStorage.getItem("dragPositions")) || {}
+    JSON.parse(localStorage.getItem("dragPositions")) || 0
   );
 
   useEffect(() => {
@@ -50,11 +50,11 @@ export default function AllFolders() {
               key={index}
             >
               <Grid
-                item="true"
+                item={true}
                 key={index}
                 xs={4}
                 style={{
-                  margin: "auto",
+                  margin: 5,
                   height: "fit-content",
                   width: 300,
                   marginTop: 10,

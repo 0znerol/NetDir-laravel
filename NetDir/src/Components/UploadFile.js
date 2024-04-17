@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { View, Button, Text, Pressable } from "react-native";
 import { useDispatch } from "react-redux";
 import { fetchFilesDb } from "../../redux/slices/FileSlice";
-import { filesPerDay } from "../../redux/slices/FileSlice";
+// import { filesPerDay } from "../../redux/slices/FileSlice";
 import { accent, background } from "../variables/Colors";
 import axios from "../api/axios";
 import { useSelector } from "react-redux";
@@ -24,7 +24,7 @@ const UploadFile = () => {
   };
   useEffect(() => {
     if (filesPerD.length === 0) {
-      dispatch(filesPerDay());
+      // dispatch(filesPerDay());
     }
   }, []);
 
@@ -37,7 +37,7 @@ const UploadFile = () => {
       formData.append("file", file);
       formData.append("user_id", localStorage.getItem("user_id"));
       //formData.append("_token", csrfToken);
-      await axios.get("/sanctum/csrf-cookie");
+      // await axios.get("/sanctum/csrf-cookie");
       setIsLoading(true);
       await axios
         .post("http://192.168.1.95:8000/api/uploadFile", formData, {

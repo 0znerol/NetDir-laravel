@@ -61,12 +61,36 @@ export default function Chart() {
     if (newVal <= data.length && newVal >= 1) {
       updateDateScroll(dateScroll + daysAmount - newVal);
       // setDateScroll(newVal - daysAmount + dateScroll);
+      console.log(
+        "newval: ",
+        newVal,
+        " is less than data.length: ",
+        data.length,
+        " and is greater than 1 "
+      );
       setDaysAmount(newVal);
     } else if (newVal > data.length) {
+      setDateScroll(data.length);
       setDaysAmount(data.length);
+      console.log(
+        "newval: ",
+        newVal,
+        " is greater than data.length: ",
+        data.length
+      );
     } else if (newVal < 1) {
       setDaysAmount(daysAmount);
+      console.log("newval: ", newVal, " is less than 1");
+    } else if (newVal === data.length) {
+      setDateScroll(0);
+      console.log(
+        "newval: ",
+        newVal,
+        " is equal to data.length: ",
+        data.length
+      );
     }
+    console.log("newval: ", newVal, "data.length: ", data.length);
   };
 
   if (files) {
@@ -194,7 +218,6 @@ export default function Chart() {
                     onPress={() => {
                       // updateDateScroll(dateScroll + 1);
                       updateZoom(daysAmount + 1);
-                      console.log(daysAmount);
                     }}
                     style={{
                       border: "1px solid" + border,
@@ -218,7 +241,6 @@ export default function Chart() {
                     onPress={() => {
                       // updateDateScroll(dateScroll - 1);
                       updateZoom(daysAmount - 1);
-                      console.log(daysAmount);
                     }}
                     style={{
                       border: "1px solid" + border,

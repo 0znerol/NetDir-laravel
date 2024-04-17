@@ -8,7 +8,12 @@ import { Text } from "react-native-paper";
 
 export default function ImageCarousel() {
   const files = useSelector((state) => state.allFiles.value);
-  const [displayedImage, setDisplayedImage] = useState(0);
+  const [displayedImage, setDisplayedImage] = useState(() => {
+    if (localStorage.getItem("displayedImage")) {
+      return parseInt(localStorage.getItem("displayedImage"));
+    }
+    return 0;
+  });
   // const [loadedImages, setLoadedImages] = useState([]);
   // const observerRef = useRef(null);
 
@@ -44,16 +49,34 @@ export default function ImageCarousel() {
   //   }
   // };
 
-  const handleImageChange = (newIndex) => {
-    setDisplayedImage(newIndex);
-  };
-
   if (files.length > 0) {
     let imageFiles = files.filter((file) => file.category.includes("image"));
-
+    const handleImageChange = (isPlus) => {
+      if (isPlus) {
+        localStorage.setItem(
+          "displayedImage",
+          (displayedImage + 1) % imageFiles.length
+        );
+        setDisplayedImage(
+          (prevDisplayedImage) => (prevDisplayedImage + 1) % imageFiles.length
+        );
+      } else {
+        localStorage.setItem(
+          "displayedImage",
+          (displayedImage - 1 + imageFiles.length) % imageFiles.length
+        );
+        setDisplayedImage(
+          (prevDisplayedImage) =>
+            (prevDisplayedImage - 1 + imageFiles.length) % imageFiles.length
+        );
+      }
+    };
     if (imageFiles.length > 0) {
       return (
         <Grid container style={{ height: "100%", alignItems: "center" }}>
+          <Text>
+            {displayedImage + 1}/{imageFiles.length}
+          </Text>
           <Grid container>
             <Grid item xs={1}>
               <Grid
@@ -74,11 +97,7 @@ export default function ImageCarousel() {
                     borderRadius: 0,
                   }}
                   onClick={() => {
-                    handleImageChange(
-                      (prevDisplayedImage) =>
-                        (prevDisplayedImage - 1 + imageFiles.length) %
-                        imageFiles.length
-                    );
+                    handleImageChange(false);
                   }}
                 >
                   <ArrowForwardIosIcon />
@@ -162,10 +181,7 @@ export default function ImageCarousel() {
                     color: accent,
                   }}
                   onClick={() => {
-                    handleImageChange(
-                      (prevDisplayedImage) =>
-                        (prevDisplayedImage + 1) % imageFiles.length
-                    );
+                    handleImageChange(true);
                   }}
                 >
                   <ArrowForwardIosIcon />

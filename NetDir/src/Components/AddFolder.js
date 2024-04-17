@@ -62,7 +62,9 @@ export default function AddFolder() {
   return (
     <Grid container xs={12} style={{ padding: 0 }}>
       <Grid container xs={12} style={{ padding: 10 }}>
-        <Text style={{ color: "lightgray", padding: 10, fontSize:"1em"}}>Add Folder</Text>
+        <Text style={{ color: "lightgray", padding: 10, fontSize: "1em" }}>
+          Add Folder
+        </Text>
       </Grid>
       <Grid
         container
@@ -70,7 +72,7 @@ export default function AddFolder() {
         style={{ display: "flex", alignContent: "space-between" }}
       >
         <Grid
-         item="true" 
+          item="true"
           xs={10}
           style={{
             display: "flex",
@@ -81,7 +83,7 @@ export default function AddFolder() {
         >
           <input
             type="text"
-            id="folderinput"
+            id="FolderInput"
             style={{
               //display:"none",
               margin: "auto",
@@ -96,11 +98,7 @@ export default function AddFolder() {
             }}
           ></input>
         </Grid>
-        <Grid
-          item="true" 
-          xs={2}
-          style={{ margin: "auto", textAlign: "end" }}
-        >
+        <Grid item="true" xs={2} style={{ margin: "auto", textAlign: "end" }}>
           <IconButton style={{ padding: 10 }} onClick={addFolder}>
             <CreateNewFolderIcon
               //   color="lightgray"

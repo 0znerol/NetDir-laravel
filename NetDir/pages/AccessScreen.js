@@ -13,7 +13,6 @@ export default function () {
       }}
     >
       <Login></Login>
-      <Register></Register>
     </Grid>
   );
 }

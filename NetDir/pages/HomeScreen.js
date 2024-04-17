@@ -13,6 +13,7 @@ import FileList from "../src/Components/FileList";
 import { background, border } from "../src/variables/Colors";
 export default function HomeScreen() {
   const [darkTheme, setDarkTheme] = useState(true);
+  console.log(console.log(document.cookie));
   return (
     <Grid
       container
@@ -20,7 +21,7 @@ export default function HomeScreen() {
         paddingTop: 75,
         // paddingLeft: 10,
         // paddingRight: 10,
-        // minHeight: "100vh",
+        minHeight: "100vh",
         justifyContent: "center",
         width: "100%",
       }}

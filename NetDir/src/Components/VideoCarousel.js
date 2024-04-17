@@ -13,7 +13,12 @@ import { Text } from "react-native";
 export default function VideoCarousel() {
   const dispatch = useDispatch();
   const files = useSelector((state) => state.allFiles.value);
-  const [displayedVideo, setDisplayedVideo] = useState(0);
+  const [displayedVideo, setDisplayedVideo] = useState(() => {
+    if (localStorage.getItem("displayedVideo")) {
+      return parseInt(localStorage.getItem("displayedVideo"));
+    }
+    return 0;
+  });
   useEffect(() => {
     if (files.length === 0) {
       dispatch(fetchFilesDb());
@@ -21,11 +26,41 @@ export default function VideoCarousel() {
   }, []);
   if (files.length > 0) {
     let videoFiles = files.filter((file) => file.category.includes("video"));
-
+    const handleVideoScroll = (isPlus) => {
+      if (isPlus) {
+        localStorage.setItem(
+          "displayedVideo",
+          (displayedVideo + 1) % videoFiles.length
+        );
+        setDisplayedVideo(
+          (prevDisplayedVideo) => (prevDisplayedVideo + 1) % videoFiles.length
+        );
+      } else {
+        localStorage.setItem(
+          "displayedVideo",
+          (displayedVideo - 1 + videoFiles.length) % videoFiles.length
+        );
+        setDisplayedVideo(
+          (prevDisplayedVideo) =>
+            (prevDisplayedVideo - 1 + videoFiles.length) % videoFiles.length
+        );
+      }
+    };
     // console.log(videoFiles);
     if (videoFiles.length > 0) {
       return (
-        <Grid container style={{ height: "100%", alignItems: "center" }}>
+        <Grid
+          container
+          style={{
+            height: "100%",
+            alignItems: "center",
+            textAlign: "right",
+            justifyContent: "right",
+          }}
+        >
+          <Text style={{ color: "white" }}>
+            {displayedVideo + 1}/{videoFiles.length}
+          </Text>
           <Grid container>
             <Grid item xs={1}>
               <Grid
@@ -46,11 +81,7 @@ export default function VideoCarousel() {
                     borderRadius: 0,
                   }}
                   onClick={() => {
-                    setDisplayedVideo(
-                      (prevDisplayedVideo) =>
-                        (prevDisplayedVideo - 1 + videoFiles.length) %
-                        videoFiles.length
-                    );
+                    handleVideoScroll(false);
                   }}
                 >
                   <ArrowForwardIosIcon />
@@ -97,10 +128,7 @@ export default function VideoCarousel() {
                     borderRadius: 0,
                   }}
                   onClick={() => {
-                    setDisplayedVideo(
-                      (prevDisplayedVideo) =>
-                        (prevDisplayedVideo + 1) % videoFiles.length
-                    );
+                    handleVideoScroll(true);
                   }}
                 >
                   <ArrowForwardIosIcon />

@@ -6,7 +6,9 @@ export const deleteFile = createAsyncThunk(
   async (file_id) => {
     try {
       await axios.get("/sanctum/csrf-cookie");
-      const response = await axios.delete(`/api/deleteFile/${file_id}/${localStorage.getItem("user_id")}`);
+      const response = await axios.delete(
+        `/api/deleteFile/${file_id}/${localStorage.getItem("user_id")}`
+      );
       return response.data;
     } catch (error) {
       console.error("Error deleting file:", error);
@@ -41,33 +43,33 @@ export const fetchFoldersDb = createAsyncThunk(
     }
   }
 );
-export const filesPerDay = createAsyncThunk(
-  "filesDays/filesPerDay",
-  async () => {
-    let dateArr = [null, null, null, null, null, null, null];
-    const date = new Date();
-    await axios.get("/sanctum/csrf-cookie");
-    await axios
-      .post("/api/fetchFilesByDate", {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        date: date.toISOString().split("T")[0],
-        user_id: localStorage.getItem("user_id"),
-      })
-      .then((response) => {
-        data = response.data;
-        dateArr.splice(6, 1, data[0]["count"]);
-        dateArr.splice(5, 1, data[1]["count"]);
-        dateArr.splice(4, 1, data[2]["count"]);
-        dateArr.splice(3, 1, data[3]["count"]);
-        dateArr.splice(2, 1, data[4]["count"]);
-        dateArr.splice(1, 1, data[5]["count"]);
-        dateArr.splice(0, 1, data[6]["count"]);
-      });
-    return dateArr;
-  }
-);
+// export const filesPerDay = createAsyncThunk(
+//   "filesDays/filesPerDay",
+//   async () => {
+//     let dateArr = [null, null, null, null, null, null, null];
+//     const date = new Date();
+//     await axios.get("/sanctum/csrf-cookie");
+//     await axios
+//       .post("/api/fetchFilesByDate", {
+//         headers: {
+//           "Content-Type": "application/json",
+//         },
+//         date: date.toISOString().split("T")[0],
+//         user_id: localStorage.getItem("user_id"),
+//       })
+//       .then((response) => {
+//         data = response.data;
+//         dateArr.splice(6, 1, data[0]["count"]);
+//         dateArr.splice(5, 1, data[1]["count"]);
+//         dateArr.splice(4, 1, data[2]["count"]);
+//         dateArr.splice(3, 1, data[3]["count"]);
+//         dateArr.splice(2, 1, data[4]["count"]);
+//         dateArr.splice(1, 1, data[5]["count"]);
+//         dateArr.splice(0, 1, data[6]["count"]);
+//       });
+//     return dateArr;
+//   }
+// );
 export const FileSlice = createSlice({
   name: "allFiles",
   initialState: {
@@ -99,9 +101,9 @@ export const FileSlice = createSlice({
       .addCase(fetchFilesDb.fulfilled, (state, action) => {
         state.value = action.payload;
       })
-      .addCase(filesPerDay.fulfilled, (state, action) => {
-        state.filesPerD = action.payload;
-      })
+      // .addCase(filesPerDay.fulfilled, (state, action) => {
+      //   state.filesPerD = action.payload;
+      // })
       .addCase(deleteFile.fulfilled, (state, action) => {
         state.value = action.payload;
       })

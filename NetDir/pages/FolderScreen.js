@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import Grid from "@mui/material/Unstable_Grid2";
+import { Grid } from "@mui/material";
 import { accent, border, background, nDark } from "../src/variables/Colors";
 import AddFolder from "../src/Components/AddFolder";
 import { Platform, Pressable, Text } from "react-native";
 import { Card } from "react-native-paper";
 import AllFolders from "../src/Components/AllFolders";
-
+import { V2Example } from "../src/Components/V2Example";
 export default function FolderScreen() {
   const [resetPosition, setResetPosition] = useState(false);
   useEffect(() => {
@@ -39,7 +39,7 @@ export default function FolderScreen() {
         }}
       >
         <Grid
-          item="true"
+          item={true}
           xs={12}
           style={{
             // paddingTop: 60,
@@ -66,7 +66,7 @@ export default function FolderScreen() {
 
         <Grid
           container
-          xs={11}
+          // xs={11}
           style={{
             // margin: "auto",
             justifyContent: "center",
@@ -74,9 +74,9 @@ export default function FolderScreen() {
         >
           <Grid
             container
-            xs={15}
+            // xs={15}
             style={{
-              margin: "auto",
+              margin: 10,
               height: "fit-content",
               width: "100%",
             }}
@@ -105,6 +105,7 @@ export default function FolderScreen() {
           </Grid>
 
           <AllFolders resetCheck={resetPosition} />
+          {/* <V2Example></V2Example> */}
         </Grid>
       </Grid>
     </Grid>

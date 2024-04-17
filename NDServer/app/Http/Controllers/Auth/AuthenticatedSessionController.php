@@ -22,15 +22,16 @@ class AuthenticatedSessionController extends Controller
     public function store(LoginRequest $request): Response
     {
         // dd(session()->all());
-        $this->middleware('auth');
+        error_log($request);
 
+        $this->middleware('auth');
         $request->validate([
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
         ]);
 
         $user = User::where('email', $request->email)->first();
-        // error_log($user);
+        error_log($user);
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json(['error' => 'The provided credentials are incorrect.'], 401);

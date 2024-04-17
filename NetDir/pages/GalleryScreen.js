@@ -22,7 +22,7 @@ export default function GalleryScreen() {
   const [opacityR, setOpacityR] = useState(1);
 
   // console.log(window.innerWidth);
-  const DisplayNoneTime = 200;
+  const DisplayNoneTime = 190;
   const GridTransitionTime = 40; // *6 = 240ms
 
   useEffect(() => {
@@ -201,6 +201,7 @@ export default function GalleryScreen() {
       </Grid>
       <Grid
         item
+        id="rightGrid"
         md={bpRight}
         //xs={12}
         //md={enlargeL ? 0 : !enlargeL && !enlargeR ? 6 : enlargeR ? 12 : 6}

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid } from "@mui/material";
+import { Checkbox, FormControlLabel, Grid } from "@mui/material";
 import axios from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { accent, border, background, nDark } from "../variables/Colors";
@@ -13,18 +13,38 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [Register, setRegister] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const user = {
+    const LoginUser = {
       email: email,
       password: password,
     };
 
-    await axios.get("/sanctum/csrf-cookie");
+    const RegisterUser = {
+      name: name,
+      email: email,
+      password: password,
+      password_confirmation: passwordConfirmation,
+    };
+
+    const csfrCookie = await axios.get("/sanctum/csrf-cookie");
+    console.log(csfrCookie);
     try {
-      const response = await axios.post("http://192.168.1.95:8000/login", user);
+      const response = await axios.post(
+        Register
+          ? "http://192.168.1.95:8000/register"
+          : "http://192.168.1.95:8000/login",
+        Register ? RegisterUser : LoginUser,
+        {
+          headers: {
+            // 'X-XSRF-TOKEN': , // Retrieve CSRF token from cookie
+            "Content-Type": "application/json",
+          },
+        }
+      );
       console.log(response.data);
       const loggedUser = [
         {
@@ -44,10 +64,10 @@ const Login = () => {
         console.log("rrrrrrrrrr");
 
         console.error("Error during login:", error);
-        document.querySelector("#loginBtn").style.transition = "0.5s";
-        document.querySelector("#loginBtn").style.backgroundColor = "red";
+        document.querySelector("#submitBtn").style.transition = "0.5s";
+        document.querySelector("#submitBtn").style.backgroundColor = "red";
         setTimeout(() => {
-          document.querySelector("#loginBtn").style.backgroundColor = accent;
+          document.querySelector("#submitBtn").style.backgroundColor = accent;
         }, 1000);
       }
     }
@@ -75,6 +95,16 @@ const Login = () => {
           justifyContent: "center",
         }}
       >
+        <Text
+          style={{
+            color: "white",
+            fontSize: 20,
+            margin: 10,
+            transitionDuration: "0.5s",
+          }}
+        >
+          {Register ? "Register" : "Login"}
+        </Text>
         <form
           style={{
             display: "flex",
@@ -83,6 +113,34 @@ const Login = () => {
           }}
           onSubmit={handleSubmit}
         >
+          {Register && (
+            <input
+              style={{
+                margin: 10,
+                padding: 10,
+                borderRadius: 5,
+                border: "1px solid " + border,
+                backgroundColor: nDark,
+                color: "white",
+                transitionDuration: "0.5s",
+                position: "relative",
+                top: 60,
+                zIndex: 0,
+              }}
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              ref={(el) => {
+                if (el) {
+                  setTimeout(() => {
+                    el.style.top = 0;
+                    el.style.zIndex = 1;
+                  }, 10);
+                }
+              }}
+            />
+          )}
           <input
             style={{
               margin: 10,
@@ -91,6 +149,7 @@ const Login = () => {
               border: "1px solid " + border,
               backgroundColor: nDark,
               color: "white",
+              zIndex: 1,
             }}
             type="email"
             placeholder="Email"
@@ -111,20 +170,96 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-
-          <Pressable
-            id="loginBtn"
-            style={{
-              backgroundColor: accent,
-              padding: 10,
-              borderRadius: 5,
-              alignItems: "center",
-              margin: 10,
-            }}
-            onPress={handleSubmit}
-          >
-            <Text style={{ color: "lightblack" }}>Log In</Text>
-          </Pressable>
+          {Register && (
+            <input
+              style={{
+                margin: 10,
+                padding: 10,
+                borderRadius: 5,
+                border: "1px solid " + border,
+                backgroundColor: nDark,
+                color: "white",
+                transitionDuration: "0.5s",
+                position: "relative",
+                top: -60,
+                zIndex: 0,
+              }}
+              type="password"
+              placeholder="Confirm Password"
+              value={passwordConfirmation}
+              onChange={(e) => setPasswordConfirmation(e.target.value)}
+              ref={(el) => {
+                if (el) {
+                  setTimeout(() => {
+                    el.style.top = 0;
+                    el.style.zIndex = 1;
+                  }, 10);
+                }
+              }}
+            />
+          )}
+          <Grid container style={{}}>
+            <Grid
+              id="submitBtn"
+              item
+              style={{
+                justifyContent: "center",
+                textAlign: "center",
+                backgroundColor: accent,
+                borderRadius: 5,
+                margin: 5,
+                alignItems: "center",
+                width: 55,
+              }}
+            >
+              <Pressable
+                style={{
+                  paddingTop: 2,
+                  width: "100%",
+                  height: "100%",
+                }}
+                onPress={handleSubmit}
+              >
+                <Text style={{ color: "lightblack", margin: "auto" }}>
+                  Submit
+                </Text>
+              </Pressable>
+            </Grid>
+            <Grid
+              item
+              style={{
+                backgroundColor: accent,
+                paddingLeft: 6,
+                borderRadius: 5,
+                alignItems: "center",
+                margin: 5,
+                // justifyContent: "center",
+              }}
+            >
+              <Pressable
+                style={
+                  {
+                    // margin: 10,
+                  }
+                }
+              >
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      style={{ color: "black", margin: "auto" }}
+                      onClick={() => {
+                        setRegister(!Register);
+                        console.log(Register);
+                      }}
+                    />
+                  }
+                  label="Register"
+                  style={{ margin: "auto", color: "black", fontSize: 1 }}
+                  labelPlacement="start"
+                />
+              </Pressable>
+            </Grid>
+          </Grid>
         </form>
       </Grid>
     </Grid>
