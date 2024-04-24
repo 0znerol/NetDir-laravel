@@ -1,12 +1,10 @@
 # NetDir
-## start the app:
+## install and start
 ```
 install node
 
 install php and composer
-```
-## pull code
-  ```
+
   cd NDServer
 
   composer install 
