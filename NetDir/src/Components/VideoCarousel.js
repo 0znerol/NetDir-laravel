@@ -9,6 +9,7 @@ import { useState, useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { fetchFilesDb } from "../../redux/slices/FileSlice";
 import { Text } from "react-native";
+import { host } from "../variables/Network";
 
 export default function VideoCarousel() {
   const dispatch = useDispatch();
@@ -111,7 +112,7 @@ export default function VideoCarousel() {
                 height="100%"
                 controls
                 allowFullScreen
-                src={`http://192.168.1.95:8000/api/show/${videoFiles[displayedVideo].id}`}
+                src={`http://${host}:8000/api/show/${videoFiles[displayedVideo].id}`}
               >
                 {videoFiles.length > 0 && <source type="video/mp4" />}
               </video>

@@ -135,7 +135,7 @@ const renderSearchFiles = (search, files) => (
               style={{ textAlign: "center", margin: 15 }}
             >
               <a
-                href={`http://192.168.1.95:8000/storage/app/public/user_${
+                href={`http://${host}:8000/storage/app/public/user_${
                   JSON.parse(localStorage.getItem("logged_user")).id
                 }/${file.file_location}/${file.file_name}`}
                 target="_blank"
@@ -288,7 +288,7 @@ const renderCategoryFiles = (
                               <Pressable
                                 onPress={() => {
                                   window.open(
-                                    `http://192.168.1.95:8000/api/show/${file.id}`
+                                    `http://${host}:8000/api/show/${file.id}`
                                   );
                                 }}
                                 style={{

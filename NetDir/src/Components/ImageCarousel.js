@@ -5,6 +5,7 @@ import { accent, border, background, nDark } from "../variables/Colors";
 import { IconButton } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { Text } from "react-native-paper";
+import { host } from "../variables/Network";
 
 export default function ImageCarousel() {
   const files = useSelector((state) => state.allFiles.value);
@@ -140,7 +141,7 @@ export default function ImageCarousel() {
                   }}
                   href={
                     index === displayedImage
-                      ? `http://192.168.1.95:8000/api/show/${file.id}`
+                      ? `http://${host}:8000/api/show/${file.id}`
                       : null
                   }
                 >
@@ -148,7 +149,7 @@ export default function ImageCarousel() {
                     key={index}
                     src={
                       index === displayedImage
-                        ? `http://192.168.1.95:8000/api/show/${file.id}`
+                        ? `http://${host}:8000/api/show/${file.id}`
                         : null
                     }
                     alt="Loading..."

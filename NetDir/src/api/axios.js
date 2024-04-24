@@ -1,7 +1,8 @@
 import axios from "axios";
+import { host } from "../variables/Network";
 
 export default axios.create({
-  baseURL: "http://192.168.1.95:8000",
+  baseURL: `http://${host}:8000`,
   withCredentials: true,
   withXSRFToken: true,
 });

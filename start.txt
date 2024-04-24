@@ -6,6 +6,7 @@ composer install
     APP_NAME=Laravel
     APP_ENV=local
     APP_KEY=
+    SESSION_DOMAIN={your ip address}
     SANCTUM_STATFUL_DOMAINS=http://{your ip address}:8000,http://{your ip address}:4444
     FRONTEND_URL=http://{your ip address}:4444
     APP_DEBUG=true
@@ -22,7 +23,7 @@ cd NetDir
 
 npm i
 
-change src/api/axios.js baseURL to your ip address
+change src/variables/Network.js host to your ip address
 
 npm run web
 

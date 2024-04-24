@@ -3,6 +3,7 @@ import Link from "@mui/material/Link";
 import { Text, View } from "react-native";
 import { useSelector } from "react-redux";
 import { accent } from "../variables/Colors";
+import { host } from "../variables/Network";
 function preventDefault(event) {
   event.preventDefault();
 }
@@ -51,7 +52,7 @@ export default function TotalFiles() {
         <Text sx={{ flex: 1 }} style={{ color: "lightgray", fontSize: "120%" }}>
           Last Upload:{" "}
           <a
-            href={`http://192.168.1.95:8000/storage/app/public/user_${
+            href={`http://${host}:8000/storage/app/public/user_${
               JSON.parse(localStorage.getItem("logged_user")).id
             }/${files[files.length - 1].file_location}/${
               files[files.length - 1].file_name
