@@ -1,4 +1,5 @@
 # NetDir
+self-hosted file storage
 ## install and start
 ```
 install node
