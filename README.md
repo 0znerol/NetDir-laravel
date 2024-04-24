@@ -9,6 +9,7 @@ start the app:
   composer install 
   
   .env:[
+  
     APP_NAME=Laravel
     APP_ENV=local
     APP_KEY=
@@ -17,6 +18,7 @@ start the app:
     FRONTEND_URL=http://{your ip address}:4444
     APP_DEBUG=true
     APP_URL=http://{your ip address}:8000
+    
 ]
   
   php artisan migrate:fresh
