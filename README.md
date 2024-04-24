@@ -40,6 +40,7 @@ clone repo
   ```
   php artisan serve --host={your ip address} --port=8000
   ```
+  
   ```
   cd ../NetDir
   ```
@@ -47,11 +48,11 @@ clone repo
   ```
   npm i
   ```
-  ## change src/variables/Network.js host to your ip address
+ **change src/variables/Network.js host to your ip address**
   
   run react server:
   ```
   npm run web
   ```
-  ### open the page via {your ip}:4444 not localhost
+ **open the page via {your ip}:4444 not localhost**
 
