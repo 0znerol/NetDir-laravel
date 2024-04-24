@@ -1,9 +1,29 @@
-cd Server/NDServer
+cd NDServer
 
 composer install 
 
-php artisan serve --host=192.168.1.95 --port=8000
+.env:[
+    APP_NAME=Laravel
+    APP_ENV=local
+    APP_KEY=
+    SANCTUM_STATFUL_DOMAINS=http://{your ip address}:8000,http://{your ip address}:4444
+    FRONTEND_URL=http://{your ip address}:4444
+    APP_DEBUG=true
+    APP_URL=http://{your ip address}:8000
+]
+
+php artisan migrate:fresh
+
+php artisan key:generatete
+
+php artisan serve --host={your ip address} --port=8000
 
 cd NetDir
 
+npm i
+
+change src/api/axios.js baseURL to your ip address
+
 npm run web
+
+open the page via {your ip}:4444 not localhost
