@@ -1,3 +1,3 @@
-const host = "192.168.1.196";
+const host = "192.168.1.95";
 
 export { host };
