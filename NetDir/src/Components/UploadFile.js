@@ -34,7 +34,7 @@ const UploadFile = () => {
       // await axios.get("/sanctum/csrf-cookie");
       setIsLoading(true);
       await axios
-        .post("http://192.168.1.95:8000/api/uploadFile", formData, {
+        .post("/api/uploadFile", formData, {
           headers: {
             "Content-type": "multipart/form-data",
           },
