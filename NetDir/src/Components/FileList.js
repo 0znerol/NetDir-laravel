@@ -10,6 +10,7 @@ import SaveIcon from "@mui/icons-material/Save";
 import axios from "../api/axios";
 import { host } from "../variables/Network";
 import { Card } from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
 
 function FileList({ fileType }) {
   const dispatch = useDispatch();
@@ -22,10 +23,10 @@ function FileList({ fileType }) {
   const [modId, setModId] = useState(0);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    dispatch(fetchFilesDb());
-    console.log(search);
-  }, []);
+  // useEffect(() => {
+  //   dispatch(fetchFilesDb());
+  //   console.log(search);
+  // }, []);
 
   const formatBytes = (bytes, decimals = 2) => {
     if (!+bytes) return "0 Bytes";
@@ -50,7 +51,7 @@ function FileList({ fileType }) {
     if (id) {
       const formData = new FormData();
       formData.append("file_name", fileName || file_name);
-      await axios.get("/sanctum/csrf-cookie");
+      // await axios.get("/sanctum/csrf-cookie");
       try {
         const response = await axios.post(
           `${host}/api/updateFile/${id}`,
@@ -84,7 +85,7 @@ function FileList({ fileType }) {
   };
 
   useEffect(() => {
-    dispatch(fetchFilesDb());
+    if (files.length === 0) dispatch(fetchFilesDb());
     setSearch(searchFile);
   }, [searchFile, dispatch]);
 
@@ -134,9 +135,9 @@ const renderSearchFiles = (search, files) => (
               style={{ textAlign: "center", margin: 15 }}
             >
               <a
-                href={`http://192.168.1.95:8000/storage/app/public/user_${localStorage.getItem(
-                  "user_id"
-                )}/${file.file_location}/${file.file_name}`}
+                href={`http://192.168.1.95:8000/storage/app/public/user_${
+                  JSON.parse(localStorage.getItem("logged_user")).id
+                }/${file.file_location}/${file.file_name}`}
                 target="_blank"
                 style={{
                   textDecorationColor: accent,
@@ -178,13 +179,13 @@ const renderCategoryFiles = (
   fileName,
   setFileName,
   formatBytes
-) => (
-  <ul
-    style={{
-      padding: 0,
-    }}
-  >
-    {files.filter((file) => file.category === fileType).length > 0 ? (
+) =>
+  files.filter((file) => file.category === fileType).length > 0 ? (
+    <ul
+      style={{
+        padding: 0,
+      }}
+    >
       <Grid
         style={{
           justifyContent: "center",
@@ -268,8 +269,8 @@ const renderCategoryFiles = (
                           }}
                         >
                           <Grid
-                            xs={modOpen ? 8 : 10}
-                            md={modOpen ? 8 : 10}
+                            xs={modOpen && file.id == modId ? 8 : 10}
+                            md={modOpen && file.id == modId ? 8 : 10}
                             style={{ padding: 15 }}
                           >
                             <Grid
@@ -287,9 +288,7 @@ const renderCategoryFiles = (
                               <Pressable
                                 onPress={() => {
                                   window.open(
-                                    `http://192.168.1.95:8000/storage/app/public/user_${localStorage.getItem(
-                                      "user_id"
-                                    )}/${file.file_location}/${file.file_name}`
+                                    `http://192.168.1.95:8000/api/show/${file.id}`
                                   );
                                 }}
                                 style={{
@@ -357,9 +356,9 @@ const renderCategoryFiles = (
                           </Grid>
                           <Grid
                             container
-                            xs={modOpen ? 3 : 2}
-                            sm={modOpen ? 3 : 2}
-                            md={modOpen ? 3 : 1}
+                            xs={modOpen && file.id == modId ? 3 : 2}
+                            // sm={modOpen ? 3 : 2}
+                            md={modOpen && file.id == modId ? 3 : 1}
                             style={{
                               // flexDirection: "row",
                               // justifyContent: "space-between",
@@ -397,28 +396,45 @@ const renderCategoryFiles = (
                               style={{
                                 textAlign: "center",
                                 margin: "auto",
-                                paddingRight: 20,
+                                paddingRight: 10,
                               }}
                             >
-                              <CreateIcon
-                                className="editIcon"
-                                style={{
-                                  color:
-                                    modOpen && file.id == modId
-                                      ? "#ffc107"
-                                      : accent,
-                                  cursor: "pointer",
-                                  fontSize: "1.5em",
-                                }}
-                                onClick={() => {
-                                  setFileName(file.file_name);
-                                  setModOpen(!modOpen);
-                                  if (modId !== file.id) {
-                                    setModOpen(true);
-                                    setModId(file.id);
-                                  }
-                                }}
-                              />
+                              {modOpen && file.id == modId ? (
+                                <CloseIcon
+                                  className="editIcon"
+                                  style={{
+                                    color: "red",
+
+                                    cursor: "pointer",
+                                    fontSize: "1.7em",
+                                  }}
+                                  onClick={() => {
+                                    setFileName(file.file_name);
+                                    setModOpen(!modOpen);
+                                    if (modId !== file.id) {
+                                      setModOpen(true);
+                                      setModId(file.id);
+                                    }
+                                  }}
+                                />
+                              ) : (
+                                <CreateIcon
+                                  className="editIcon"
+                                  style={{
+                                    color: accent,
+                                    cursor: "pointer",
+                                    fontSize: "1.5em",
+                                  }}
+                                  onClick={() => {
+                                    setFileName(file.file_name);
+                                    setModOpen(!modOpen);
+                                    if (modId !== file.id) {
+                                      setModOpen(true);
+                                      setModId(file.id);
+                                    }
+                                  }}
+                                />
+                              )}
                             </Grid>
                           </Grid>
                         </Grid>
@@ -471,7 +487,7 @@ const renderCategoryFiles = (
                               >
                                 <DeleteForeverIcon
                                   style={{
-                                    color: "red",
+                                    color: "#ffc400",
                                     cursor: "pointer",
                                     fontSize: "1.8em",
                                     margin: "auto",
@@ -494,8 +510,7 @@ const renderCategoryFiles = (
             );
           })}
       </Grid>
-    ) : null}
-  </ul>
-);
+    </ul>
+  ) : null;
 
 export default FileList;

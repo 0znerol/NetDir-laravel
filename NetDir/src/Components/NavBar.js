@@ -14,7 +14,6 @@ export default function NavBar() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isSearchPage = location.pathname === "/Search";
-  const isGalleryPage = location.pathname === "/Gallery";
   const files = useSelector((state) => state.allFiles.value);
   const [openDots, setOpenDots] = useState(false);
   const [showSearchBar, setShowSearchBar] = useState(false);
@@ -70,24 +69,25 @@ export default function NavBar() {
     }
   }, [isSearchPage]);
 
-  useEffect(() => {
-    if (!isGalleryPage) {
-      localStorage.removeItem("displayedImage");
-      localStorage.removeItem("displayedVideo");
-    }
-  });
+  // useEffect(() => {
+  //   const currentPage = location.pathname;
+
+  //   if (currentPage === "Home" || currentPage === "Folders") {
+  //     localStorage.removeItem("displayedImage");
+  //     localStorage.removeItem("displayedVideo");
+  //   }
+  // }, [location.pathname]);
 
   const handleLogout = async () => {
     try {
-      // Clear the cookies on the server
-      await axios.get("/sanctum/csrf-cookie");
-      await axios.post("/logout");
+      if (localStorage.getItem("logged_user")) {
+        // await axios.get("/sanctum/csrf-cookie");
+        await axios.post("/logout");
 
-      // Clear the local storage
-      localStorage.removeItem("user_id");
-      localStorage.removeItem("user_email");
-      localStorage.removeItem("user_name");
-      // Navigate to the login page
+        localStorage.removeItem("logged_user");
+        localStorage.removeItem("displayedVideo");
+        localStorage.removeItem("displayedImage");
+      }
       navigate("/");
       setOpenDots(false);
     } catch (error) {
@@ -109,13 +109,10 @@ export default function NavBar() {
         xs={12}
         style={{
           position: "fixed",
-          // top: -10,
-          // float: "left",
           zIndex: 1000,
-          padding: 10,
+          paddingLeft: 10,
+          paddingRight: 5,
           paddingTop: 0,
-          // marginLeft: "1rem",
-          // borderRadius: 50,
         }}
       >
         <StatusBar style="auto" />
@@ -196,14 +193,14 @@ export default function NavBar() {
                 zIndex: 500,
               }}
             >
-              {localStorage.getItem("user_id") ? (
+              {localStorage.getItem("logged_user") ? (
                 <Text
                   style={{
                     textAlign: "center",
                     color: "lightgray",
                   }}
                 >
-                  User: {localStorage.getItem("user_name")}
+                  User: {JSON.parse(localStorage.getItem("logged_user")).name}
                 </Text>
               ) : null}
               <Pressable
@@ -213,7 +210,7 @@ export default function NavBar() {
                 }}
                 onPress={handleLogout}
               >
-                {localStorage.getItem("user_id") ? (
+                {localStorage.getItem("logged_user") ? (
                   <Appbar.Content title="Logout" />
                 ) : (
                   <Appbar.Content title="Login" />
@@ -223,7 +220,7 @@ export default function NavBar() {
           ))
         : (setTimeout(() => {
             document.querySelector(".dotsMenu").style.top = "-2px";
-          }, 1),
+          }, 100),
           (
             <Grid
               item="true"
@@ -242,14 +239,14 @@ export default function NavBar() {
                 zIndex: 500,
               }}
             >
-              {localStorage.getItem("user_id") ? (
+              {localStorage.getItem("logged_user") ? (
                 <Text
                   style={{
                     textAlign: "center",
                     color: "lightgray",
                   }}
                 >
-                  User: {localStorage.getItem("user_name")}
+                  User: {JSON.parse(localStorage.getItem("logged_user")).name}
                 </Text>
               ) : null}
               <Pressable
@@ -259,7 +256,7 @@ export default function NavBar() {
                 }}
                 onPress={handleLogout}
               >
-                {localStorage.getItem("user_id") ? (
+                {localStorage.getItem("logged_user") ? (
                   <Appbar.Content title="Logout" />
                 ) : (
                   <Appbar.Content title="Login" />

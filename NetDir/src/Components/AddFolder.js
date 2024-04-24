@@ -25,13 +25,12 @@ export default function AddFolder() {
     if (folderExists) {
       alert("Folder already exists");
     } else {
-      const user_id = localStorage.getItem("user_id");
+      // const user_id = JSON.parse(localStorage.getItem("logged_user")).id;
       const formData = new FormData();
-
       formData.append("folder", input.value);
-      formData.append("user_id", user_id);
+      // formData.append("user_id", user_id);
       console.log(formData);
-      await axios.get("/sanctum/csrf-cookie");
+      // await axios.get("/sanctum/csrf-cookie");
       await axios
         .post("http://192.168.1.95:8000/api/addFolder", formData, {
           headers: {

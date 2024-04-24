@@ -1,24 +1,23 @@
 import * as React from "react";
 import { LineChart } from "@mui/x-charts/LineChart";
 import { axisClasses } from "@mui/x-charts";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
-import { fetchFilesDb } from "../../redux/slices/FileSlice";
 import { accent, border } from "../variables/Colors";
 import { Grid, IconButton } from "@mui/material";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { Text, Pressable } from "react-native";
-
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
 export default function Chart() {
-  const dispatch = useDispatch();
   const files = useSelector((state) => state.allFiles.value);
   const [scrollAmount, setScrollAmount] = useState(7);
   const [dateScroll, setDateScroll] = useState(7);
   const [daysAmount, setDaysAmount] = useState(7);
 
-  useEffect(() => {
-    dispatch(fetchFilesDb());
-  }, [dispatch]);
+  // useEffect(() => {
+  //   // dispatch(fetchFilesDb());
+  // }, [dispatch]);
 
   const getUploadedFilesByDate = () => {
     let startDate = files?.reduce((oldestDate, file) => {
@@ -59,38 +58,38 @@ export default function Chart() {
 
   const updateZoom = (newVal) => {
     if (newVal <= data.length && newVal >= 1) {
-      updateDateScroll(dateScroll + daysAmount - newVal);
-      // setDateScroll(newVal - daysAmount + dateScroll);
-      console.log(
-        "newval: ",
-        newVal,
-        " is less than data.length: ",
-        data.length,
-        " and is greater than 1 "
-      );
       setDaysAmount(newVal);
+      updateDateScroll(dateScroll + 1);
+      // setDateScroll(newVal - daysAmount + dateScroll);
+      // console.log(
+      //   "newval: ",
+      //   newVal,
+      //   " is less than data.length: ",
+      //   data.length,
+      //   " and is greater than 1 "
+      // );
     } else if (newVal > data.length) {
       setDateScroll(data.length);
       setDaysAmount(data.length);
-      console.log(
-        "newval: ",
-        newVal,
-        " is greater than data.length: ",
-        data.length
-      );
+      // console.log(
+      //   "newval: ",
+      //   newVal,
+      //   " is greater than data.length: ",
+      //   data.length
+      // );
     } else if (newVal < 1) {
       setDaysAmount(daysAmount);
-      console.log("newval: ", newVal, " is less than 1");
+      // console.log("newval: ", newVal, " is less than 1");
     } else if (newVal === data.length) {
       setDateScroll(0);
-      console.log(
-        "newval: ",
-        newVal,
-        " is equal to data.length: ",
-        data.length
-      );
+      // console.log(
+      //   "newval: ",
+      //   newVal,
+      //   " is equal to data.length: ",
+      //   data.length
+      // );
     }
-    console.log("newval: ", newVal, "data.length: ", data.length);
+    // console.log("newval: ", newVal, "data.length: ", data.length);
   };
 
   if (files) {
@@ -213,51 +212,47 @@ export default function Chart() {
                   justifyContent: "right",
                 }}
               >
-                <Grid item xs={2} md={1}>
-                  <Pressable
-                    onPress={() => {
+                <Grid
+                  item
+                  xs={2}
+                  md={1}
+                  style={{ textAlign: "center", width: "100%" }}
+                >
+                  <IconButton
+                    onClick={() => {
                       // updateDateScroll(dateScroll + 1);
                       updateZoom(daysAmount + 1);
                     }}
                     style={{
                       border: "1px solid" + border,
                       borderRadius: 5,
-                      margin: 2,
+                      margin: 0,
+                      width: "100%",
+                      padding: 1,
                     }}
                   >
-                    <Text
-                      style={{
-                        color: "white",
-                        textAlign: "center",
-                        color: "lightgray",
-                      }}
-                    >
-                      -
-                    </Text>
-                  </Pressable>
+                    <RemoveIcon
+                      style={{ color: "white", fontSize: "0.7em" }}
+                    ></RemoveIcon>
+                  </IconButton>
                 </Grid>
-                <Grid item xs={2} md={1}>
-                  <Pressable
-                    onPress={() => {
+                <Grid item xs={2} md={1} style={{ textAlign: "center" }}>
+                  <IconButton
+                    onClick={() => {
                       // updateDateScroll(dateScroll - 1);
                       updateZoom(daysAmount - 1);
                     }}
                     style={{
                       border: "1px solid" + border,
                       borderRadius: 5,
-                      margin: 2,
+                      width: "100%",
+                      padding: 1,
                     }}
                   >
-                    <Text
-                      style={{
-                        color: "white",
-                        textAlign: "center",
-                        color: "lightgray",
-                      }}
-                    >
-                      +
-                    </Text>
-                  </Pressable>
+                    <AddIcon
+                      style={{ color: "white", fontSize: "0.7em" }}
+                    ></AddIcon>
+                  </IconButton>
                 </Grid>
               </Grid>
             </Grid>

@@ -36,6 +36,6 @@ Route::get('/', function () {
 
 //     return $response;
 // });
-Route::get('storage/app/public/user_{userId}/uploadedFiles/{category}/{filename}', 'App\Http\Controllers\FilesController@show');
+// Route::get('storage/app/public/user_{userId}/uploadedFiles/{category}/{filename}', 'App\Http\Controllers\FilesController@show');
 
 require __DIR__.'/auth.php';

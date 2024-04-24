@@ -19,11 +19,11 @@ export default function VideoCarousel() {
     }
     return 0;
   });
-  useEffect(() => {
-    if (files.length === 0) {
-      dispatch(fetchFilesDb());
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (files.length === 0) {
+  //     dispatch(fetchFilesDb());
+  //   }
+  // }, []);
   if (files.length > 0) {
     let videoFiles = files.filter((file) => file.category.includes("video"));
     const handleVideoScroll = (isPlus) => {
@@ -53,24 +53,32 @@ export default function VideoCarousel() {
           container
           style={{
             height: "100%",
-            alignItems: "center",
+            minHeight: "300px",
+            alignItems: "start",
             textAlign: "right",
             justifyContent: "right",
+            overflow: "hidden",
           }}
         >
           <Text style={{ color: "white" }}>
             {displayedVideo + 1}/{videoFiles.length}
           </Text>
-          <Grid container>
+          <Grid
+            container
+            style={{
+              height: "100%",
+            }}
+          >
             <Grid item xs={1}>
               <Grid
                 style={{
                   display: "flex",
                   backgroundColor: border,
-                  justifyContent: "center",
+                  // justifyContent: "center",
                   borderTopLeftRadius: 10,
                   borderBottomLeftRadius: 10,
                   height: "100%",
+                  overflow: "hidden",
                 }}
               >
                 <IconButton
@@ -93,19 +101,17 @@ export default function VideoCarousel() {
               xs={10}
               style={{
                 justifyContent: "center",
-                alignItems: "center",
+                // alignItems: "center",
                 display: "flex",
+                height: "100%",
               }}
             >
               <video
                 width="100%"
+                height="100%"
                 controls
                 allowFullScreen
-                src={`http://192.168.1.95:8000/storage/app/public/user_${localStorage.getItem(
-                  "user_id"
-                )}/${videoFiles[displayedVideo].file_location}/${
-                  videoFiles[displayedVideo].file_name
-                }`}
+                src={`http://192.168.1.95:8000/api/show/${videoFiles[displayedVideo].id}`}
               >
                 {videoFiles.length > 0 && <source type="video/mp4" />}
               </video>

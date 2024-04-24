@@ -5,9 +5,20 @@ import AddFolder from "../src/Components/AddFolder";
 import { Platform, Pressable, Text } from "react-native";
 import { Card } from "react-native-paper";
 import AllFolders from "../src/Components/AllFolders";
-import { V2Example } from "../src/Components/V2Example";
+import { fetchFilesDb, fetchFoldersDb } from "../redux/slices/FileSlice";
+import { useDispatch, useSelector } from "react-redux";
+
 export default function FolderScreen() {
+  const dispatch = useDispatch();
   const [resetPosition, setResetPosition] = useState(false);
+  const folders = useSelector((state) => state.allFiles.folders);
+  const files = useSelector((state) => state.allFiles.value);
+  useEffect(() => {
+    if (folders.length === 0 || files.length === 0) {
+      dispatch(fetchFoldersDb());
+      dispatch(fetchFilesDb());
+    }
+  }, []);
   useEffect(() => {
     if (resetPosition) {
       localStorage.removeItem("dragPositions");
@@ -103,8 +114,15 @@ export default function FolderScreen() {
               </Text>
             </Pressable>
           </Grid>
-
-          <AllFolders resetCheck={resetPosition} />
+          <Grid
+            container
+            style={{
+              width: "100%",
+              justifyContent: "center",
+            }}
+          >
+            <AllFolders resetCheck={resetPosition} />
+          </Grid>
           {/* <V2Example></V2Example> */}
         </Grid>
       </Grid>

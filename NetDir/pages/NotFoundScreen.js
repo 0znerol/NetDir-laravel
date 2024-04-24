@@ -2,7 +2,6 @@ import { Grid } from "@mui/material";
 import React from "react";
 import { Text } from "react-native-paper";
 import { accent, background } from "../src/variables/Colors";
-import { G } from "react-native-svg";
 import { Pressable } from "react-native";
 import { useNavigate } from "react-router-dom";
 
@@ -14,12 +13,13 @@ const NotFoundScreen = () => {
       style={{
         height: "100vh",
         backgroundColor: background,
+        marginTop: 120,
         textAlign: "center",
         alignContent: "start",
       }}
     >
       <Grid item xs={12} style={{ marginTop: 30 }}>
-        <Text style={{ fontSize: "1.5em" }}>404 Not Found</Text>
+        <Text style={{ fontSize: "1.5em" }}>Not Found</Text>
       </Grid>
       <Grid item xs={12}>
         <Grid item xs={12}>

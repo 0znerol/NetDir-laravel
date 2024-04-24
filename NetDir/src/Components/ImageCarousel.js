@@ -73,11 +73,27 @@ export default function ImageCarousel() {
     };
     if (imageFiles.length > 0) {
       return (
-        <Grid container style={{ height: "100%", alignItems: "center" }}>
-          <Text>
+        <Grid
+          container
+          style={{
+            // height: "fit-content",
+            alignItems: "start",
+            minHeight: "300px",
+          }}
+        >
+          <Text style={{}}>
             {displayedImage + 1}/{imageFiles.length}
           </Text>
-          <Grid container>
+          <Grid
+            container
+            style={
+              {
+                // height: "fit-content",
+                // alignItems: "start",
+                // minHeight: "300px",
+              }
+            }
+          >
             <Grid item xs={1}>
               <Grid
                 style={{
@@ -124,9 +140,7 @@ export default function ImageCarousel() {
                   }}
                   href={
                     index === displayedImage
-                      ? `http://192.168.1.95:8000/storage/app/public/user_${localStorage.getItem(
-                          "user_id"
-                        )}/${file.file_location}/${file.file_name}`
+                      ? `http://192.168.1.95:8000/api/show/${file.id}`
                       : null
                   }
                 >
@@ -134,9 +148,7 @@ export default function ImageCarousel() {
                     key={index}
                     src={
                       index === displayedImage
-                        ? `http://192.168.1.95:8000/storage/app/public/user_${localStorage.getItem(
-                            "user_id"
-                          )}/${file.file_location}/${file.file_name}`
+                        ? `http://192.168.1.95:8000/api/show/${file.id}`
                         : null
                     }
                     alt="Loading..."

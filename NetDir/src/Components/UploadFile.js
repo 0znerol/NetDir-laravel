@@ -5,28 +5,19 @@ import { fetchFilesDb } from "../../redux/slices/FileSlice";
 // import { filesPerDay } from "../../redux/slices/FileSlice";
 import { accent, background } from "../variables/Colors";
 import axios from "../api/axios";
-import { useSelector } from "react-redux";
 import { Grid } from "@mui/material";
 import { LinearProgress } from "@mui/material";
-import { createTheme } from "@mui/material/styles";
 
 const UploadFile = () => {
   const dispatch = useDispatch();
   const [file, setFile] = useState(null);
-  const [csrfToken, setCsrfToken] = useState(null);
   const [errorModal, setErrorModal] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const filesPerD = useSelector((state) => state.allFiles.filesPerD);
   const handleFileChange = (file) => {
     setFile(event.target.files[0]);
   };
-  useEffect(() => {
-    if (filesPerD.length === 0) {
-      // dispatch(filesPerDay());
-    }
-  }, []);
 
   async function handleUpload() {
     console.log("Uploading file..." + file);
@@ -35,7 +26,10 @@ const UploadFile = () => {
       console.log(file);
       const formData = new FormData();
       formData.append("file", file);
-      formData.append("user_id", localStorage.getItem("user_id"));
+      // formData.append(
+      //   "user_id",
+      //   JSON.parse(localStorage.getItem("logged_user")).id
+      // );
       //formData.append("_token", csrfToken);
       // await axios.get("/sanctum/csrf-cookie");
       setIsLoading(true);
@@ -52,7 +46,6 @@ const UploadFile = () => {
         .then((response) => {
           console.log(response.data);
           dispatch(fetchFilesDb());
-          dispatch(filesPerDay());
         })
         .catch((error) => {
           console.error("Error uploading file:", error);

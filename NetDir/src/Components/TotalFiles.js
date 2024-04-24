@@ -9,13 +9,10 @@ function preventDefault(event) {
 
 export default function TotalFiles() {
   const files = useSelector((state) => state.allFiles.value);
-  const userFiles = files.filter(
-    (file) => file.user == localStorage.getItem("user_id")
-  );
 
-  if (!userFiles) {
+  if (!files) {
     return <Text>Loading...</Text>;
-  } else if (userFiles.length === 0) {
+  } else if (files.length === 0) {
     return (
       <View
         style={{
@@ -48,23 +45,24 @@ export default function TotalFiles() {
           variant="h2"
           style={{ color: "lightgray", fontSize: 30 }}
         >
-          {userFiles.length}
+          {files.length}
         </Text>
 
         <Text sx={{ flex: 1 }} style={{ color: "lightgray", fontSize: "120%" }}>
           Last Upload:{" "}
           <a
-            href={
-              "http://localhost:3070/" +
-              userFiles[userFiles.length - 1].file_location
-            }
+            href={`http://192.168.1.95:8000/storage/app/public/user_${
+              JSON.parse(localStorage.getItem("logged_user")).id
+            }/${files[files.length - 1].file_location}/${
+              files[files.length - 1].file_name
+            }`}
             target="_blank"
             style={{
               color: "lightgray",
               textDecorationColor: accent,
             }}
           >
-            {userFiles[userFiles.length - 1].file_name}
+            {files[files.length - 1].file_name}
           </a>
         </Text>
         {/* <Text sx={{ flex: 1 }} style={{ color: "lightgray", fontSize: "120%" }}>

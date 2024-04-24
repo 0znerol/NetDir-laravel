@@ -23,11 +23,6 @@ export default function AllFolders() {
   );
 
   useEffect(() => {
-    dispatch(fetchFoldersDb());
-    dispatch(fetchFilesDb());
-  }, [dispatch]);
-
-  useEffect(() => {
     localStorage.setItem("dragPositions", JSON.stringify(positions));
   }, [positions]);
 
@@ -48,18 +43,22 @@ export default function AllFolders() {
                 }));
               }}
               key={index}
+              // style={{ width: "100%" }}
             >
               <Grid
                 item={true}
                 key={index}
-                xs={4}
+                xs={3}
                 style={{
-                  margin: 5,
+                  margin: 10,
                   height: "fit-content",
-                  width: 300,
-                  marginTop: 10,
-                  position: "relative",
-                  zIndex: 100,
+                  width: "fit-content",
+                  minWidth: "200px",
+
+                  // marginTop: 20,
+                  // position: "relative",
+
+                  // zIndex: 100,
                 }}
               >
                 {Platform.OS === "web" ? (
@@ -69,6 +68,8 @@ export default function AllFolders() {
                       borderWidth: 3,
                       borderColor: border,
                       // margin: 10,
+                      width: "100%",
+                      minWidth: "fit-content",
                     }}
                   >
                     <Grid
@@ -239,14 +240,7 @@ export default function AllFolders() {
                             key={index}
                           >
                             <a
-                              href={
-                                "http://192.168.1.95:8000/storage/app/public/user_" +
-                                localStorage.getItem("user_id") +
-                                "/" +
-                                file.file_location +
-                                "/" +
-                                file.file_name
-                              }
+                              href={`http://192.168.1.95:8000/api/show/${file.id}`}
                               target="_blank"
                               style={{
                                 color: "lightgray",

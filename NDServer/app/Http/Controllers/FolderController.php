@@ -6,6 +6,8 @@ use App\Http\Requests\StoreFolderRequest;
 use App\Http\Requests\UpdateFolderRequest;
 use App\Models\Folder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+
 
 
 class FolderController extends Controller
@@ -15,7 +17,7 @@ class FolderController extends Controller
      */
     public function index(Request $request)
     {
-        $userId = $request->query('user_id');
+        $userId = Auth::user()->id;
         return Folder::where('user', $userId)->get();
     }
 
@@ -32,10 +34,10 @@ class FolderController extends Controller
      */
     public function store(StoreFolderRequest $request)
     {
-        if ($request->has('folder', 'user_id')) {
+        if ($request->has('folder')) {
             $folder = new Folder();
             $folder->folder_name = $request->folder;
-            $folder->user = $request->user_id;
+            $folder->user = Auth::user()->id;
             $folder->save();
             return response()->json(['message' => 'Folder created successfully']);
         }
@@ -74,8 +76,10 @@ class FolderController extends Controller
     {
         try {
             $folder = Folder::findOrFail($folder_id);
-            $folder->delete();
-            return response()->json(Folder::all());
+            if ($folder->user == Auth::user()->id){
+                $folder->delete();
+                return response()->json(Folder::where("user", Auth::user()->id)->get());
+            }
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }

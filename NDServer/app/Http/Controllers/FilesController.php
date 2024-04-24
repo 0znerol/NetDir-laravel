@@ -23,9 +23,9 @@ class FilesController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index()
     {
-        $userId = $request->query('user_id');
+        $userId = Auth::user()->id;
         error_log($userId);
         return Files::where('user', $userId)->get();
     }
@@ -47,20 +47,20 @@ class FilesController extends Controller
 
     }
 
-    public function fetchFilesByDate(StorefilesRequest $request)
-    {
-        $date = $request->input('date');
-        $id = $request->input('user_id');
-        $date = Carbon::parse($date);
-        $counts = [];
-        for ($i = 0; $i < 7; $i++) {
-            $fileCount = Files::whereDate('created_at', $date)->where("user", $id)->count();
-            $counts[] = ['date' => $date->toDateString(), 'count' => $fileCount];
-            $date->subDay();
-        }
+    // public function fetchFilesByDate(StorefilesRequest $request)
+    // {
+    //     $date = $request->input('date');
+    //     $id = $request->input('user_id');
+    //     $date = Carbon::parse($date);
+    //     $counts = [];
+    //     for ($i = 0; $i < 7; $i++) {
+    //         $fileCount = Files::whereDate('created_at', $date)->where("user", $id)->count();
+    //         $counts[] = ['date' => $date->toDateString(), 'count' => $fileCount];
+    //         $date->subDay();
+    //     }
 
-        return response()->json($counts);
-    }
+    //     return response()->json($counts);
+    // }
 
     /**
      * Show the form for creating a new resource.
@@ -86,44 +86,40 @@ class FilesController extends Controller
             $file = $request->file('file');
             $fileExtension = $file->getClientOriginalExtension();
 
-
-            function fileLocation($fileExtension, $extensions) {
-                foreach ($extensions as $category => $exts) {
-                    error_log($category);
-                    if (in_array($fileExtension, $exts)) {
-                        return "uploadedFiles/{$category}s";
-                    }
-                }
-                return 'uploadedFiles/misc';
-            };
-
             function fileCategory($fileExtension, $extensions) {
-                foreach ($extensions as $category => $exts) {
-                    error_log($category);
-                    if (in_array($fileExtension, $exts)) {
-                        return $category;
-                    }
+                switch ($fileExtension) {
+                    case in_array($fileExtension, $extensions['image']):
+                        return 'image';
+                    case in_array($fileExtension, $extensions['video']):
+                        return 'video';
+                    case in_array($fileExtension, $extensions['audio']):
+                        return 'audio';
+                    case in_array($fileExtension, $extensions['text']):
+                        return 'text';
+                    case in_array($fileExtension, $extensions['file']):
+                        return 'file';
+                    default:
+                        return 'misc';
                 }
-                return 'misc';
-            };
+            }
+            
 
-            if($request->has('user_id')){
-                $id = $request->input('user_id');
+            if(Auth::user()){
+                $id = Auth::user()->id;
                 $fileRecord = new files;
-                $fileRecord->file_location = fileLocation($fileExtension, $extensions);
+                $fileRecord->file_location = "uploadedFiles/" . fileCategory($fileExtension, $extensions);
                 $fileRecord->file_name = $file->getClientOriginalName();
                 $fileRecord->category = fileCategory($fileExtension, $extensions);
                 $fileRecord->folder = null;
                 $fileRecord->file_size = $file->getSize();
                 $fileRecord->user = $id;
                 $fileRecord->save();
-                $destinationPath = base_path("storage/app/public/" . "user_" . $id . "/" . fileLocation($fileExtension, $extensions));
+                $destinationPath = base_path("storage/app/public/" . "user_" . $id . "/uploadedFiles/" . fileCategory($fileExtension, $extensions));
 
                 $file->move($destinationPath, $file->getClientOriginalName());
 
                 return response()->json([
                     'file_name' => $file->getClientOriginalName(),
-                    //'file_type' => $file->getMimeType()
                 ]);
         }else{
             return response()->json(['error' => 'No user id provided'], 400);
@@ -132,13 +128,15 @@ class FilesController extends Controller
 
         return response()->json(['error' => 'No file uploaded'], 400);
     }
-
     /**
      * Display the specified resource.
      */
-    public function show($userId, $category, $filename)
+    public function show($fileId)
     {
-        $path = storage_path('app/public/user_' . $userId . '/uploadedFiles/' . $category . "/" . $filename);
+        $file = files::where('id', $fileId)->first();
+        if($file && $file->user === Auth::user()->id){
+
+        $path = storage_path('app/public/user_' . $file->user . '/' . $file->file_location. '/' . $file->file_name);
 
         if (!File::exists($path)) {
             abort(404);
@@ -157,6 +155,7 @@ class FilesController extends Controller
         }, 200, $headers);
     }
 
+    }
     /**
      * Show the form for editing the specified resource.
      */
@@ -182,7 +181,7 @@ class FilesController extends Controller
             $file->file_name = $request->input('file_name');
             $file->save();
 
-            return response()->json(files::all());
+            return response()->json(Files::where('user', Auth::user()->id)->get());
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
@@ -191,15 +190,15 @@ class FilesController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($file_id, $user_id)
+    public function destroy($file_id)
     {
         try {
-            $file = files::where('user', $user_id)->where('id', $file_id)->first();
+            $file = files::where('user', Auth::user()->id)->where('id', $file_id)->first();
             //$file = files::findOrFail($file_id);
-            if (Storage::exists("public/"."user_".$user_id."/".$file->file_location . '/' . $file->file_name)) {
-                Storage::delete("public/"."user_".$user_id."/".$file->file_location . '/' . $file->file_name);
+            if (Storage::exists("public/"."user_".Auth::user()->id."/".$file->file_location . '/' . $file->file_name)) {
+                Storage::delete("public/"."user_".Auth::user()->id."/".$file->file_location . '/' . $file->file_name);
                 $file->delete();
-                return response()->json(files::where('user', $user_id)->get());
+                return response()->json(files::where('user', Auth::user()->id)->get());
             } else {
                 return response()->json(['error' => 'File not found'], 404);
             }

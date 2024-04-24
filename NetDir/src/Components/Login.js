@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Checkbox, FormControlLabel, Grid } from "@mui/material";
+import { Alert, Checkbox, FormControlLabel, Grid } from "@mui/material";
 import axios from "../api/axios";
 import { useNavigate } from "react-router-dom";
 import { accent, border, background, nDark } from "../variables/Colors";
 import { Pressable, Text } from "react-native";
 import { setUser } from "../../redux/slices/FileSlice";
 import Cookies from "js-cookie";
-
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 const Login = () => {
   const navigate = useNavigate();
   const [name, setName] = useState("");
@@ -14,6 +14,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [Register, setRegister] = useState(false);
+  const [loggedError, setLoggedError] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -30,32 +31,30 @@ const Login = () => {
       password_confirmation: passwordConfirmation,
     };
 
-    const csfrCookie = await axios.get("/sanctum/csrf-cookie");
-    console.log(csfrCookie);
+    await axios.get("/sanctum/csrf-cookie");
     try {
-      const response = await axios.post(
-        Register
-          ? "http://192.168.1.95:8000/register"
-          : "http://192.168.1.95:8000/login",
-        Register ? RegisterUser : LoginUser,
-        {
-          headers: {
-            // 'X-XSRF-TOKEN': , // Retrieve CSRF token from cookie
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      console.log(response.data);
-      const loggedUser = [
-        {
+      if (!localStorage.getItem("logged_user")) {
+        const response = await axios.post(
+          Register
+            ? "http://192.168.1.95:8000/register"
+            : "http://192.168.1.95:8000/login",
+          Register ? RegisterUser : LoginUser,
+          {
+            headers: {
+              // 'X-XSRF-TOKEN': , // Retrieve CSRF token from cookie
+              "Content-Type": "application/json",
+            },
+          }
+        );
+        console.log(response.data);
+        const loggedUser = {
           id: response.data.id,
           name: response.data.name,
           email: response.data.email,
-        },
-      ];
-      localStorage.setItem("user_id", response.data.id);
-      localStorage.setItem("user_name", response.data.name);
-      localStorage.setItem("user_email", response.data.email);
+        };
+
+        localStorage.setItem("logged_user", JSON.stringify(loggedUser));
+      }
       navigate("/Home");
     } catch (error) {
       if (error.response && error.response.data && error.response.data.error) {
@@ -69,6 +68,9 @@ const Login = () => {
         setTimeout(() => {
           document.querySelector("#submitBtn").style.backgroundColor = accent;
         }, 1000);
+        if (localStorage.getItem("logged_user")) {
+          setLoggedError(true);
+        }
       }
     }
   };
@@ -95,6 +97,33 @@ const Login = () => {
           justifyContent: "center",
         }}
       >
+        {loggedError && (
+          <Alert
+            severity="error"
+            style={{
+              backgroundColor: "#160B0B",
+              height: "fit-content",
+              margin: 10,
+            }}
+          >
+            <Text
+              style={{ color: "white", margin: "auto", height: "fit-content" }}
+            >
+              Already logged in. click the
+              <MoreVertIcon></MoreVertIcon>in the navbar to log out or press the
+              link to go back{" "}
+              <Pressable
+                onClick={handleSubmit}
+                style={{
+                  color: accent,
+                  textDecorationLine: "underline",
+                }}
+              >
+                Home
+              </Pressable>
+            </Text>
+          </Alert>
+        )}
         <Text
           style={{
             color: "white",

@@ -8,9 +8,12 @@ import { useState } from "react";
 import { accent, border, background, nDark } from "../src/variables/Colors";
 import ImageCarousel from "../src/Components/ImageCarousel";
 import VideoCarousel from "../src/Components/VideoCarousel";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchFilesDb } from "../redux/slices/FileSlice";
 // import { makeStyles } from "@mui/styles";
 
 export default function GalleryScreen() {
+  const dispatch = useDispatch();
   const [enlargeR, setEnlargeR] = useState(false);
   const [enlargeL, setEnlargeL] = useState(false);
   const [showComponentL, setShowComponentL] = useState(true);
@@ -20,6 +23,7 @@ export default function GalleryScreen() {
 
   const [opacityL, setOpacityL] = useState(1);
   const [opacityR, setOpacityR] = useState(1);
+  const files = useSelector((state) => state.allFiles.value);
 
   // console.log(window.innerWidth);
   const DisplayNoneTime = 190;
@@ -96,6 +100,9 @@ export default function GalleryScreen() {
     return () => clearTimeout(timeout);
   }, [opacityR, opacityL]);
 
+  useEffect(() => {
+    dispatch(fetchFilesDb());
+  }, []);
   return (
     <Grid
       container
@@ -109,6 +116,7 @@ export default function GalleryScreen() {
           display: showComponentL ? "block" : "none",
           opacity: opacityL,
           transition: "opacity 0.2s ease-in-out",
+          maxHeight: "90vh",
           //width: window.innerWidth > '500' ? "50%" : "100%"
         }}
         //        ref={(el) => {

@@ -1,9 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Grid } from "@mui/material";
-import { Text } from "react-native";
 import { Card } from "react-native-paper";
 import { Platform } from "react-native";
-import { Provider } from "react-redux";
+import { Provider, useDispatch, useSelector } from "react-redux";
 import { PaperProvider, DarkTheme, DefaultTheme } from "react-native-paper";
 import store from "../redux/store";
 import Chart from "../src/Components/Chart";
@@ -11,9 +10,14 @@ import TotalFiles from "../src/Components/TotalFiles";
 import UploadFile from "../src/Components/UploadFile";
 import FileList from "../src/Components/FileList";
 import { background, border } from "../src/variables/Colors";
+import { fetchFilesDb } from "../redux/slices/FileSlice";
 export default function HomeScreen() {
-  const [darkTheme, setDarkTheme] = useState(true);
-  console.log(console.log(document.cookie));
+  const dispatch = useDispatch();
+  const files = useSelector((state) => state.allFiles.value);
+  useEffect(() => {
+    if (files.length === 0) dispatch(fetchFilesDb());
+  }, []);
+  // const [darkTheme, setDarkTheme] = useState(true);
   return (
     <Grid
       container
@@ -104,102 +108,110 @@ export default function HomeScreen() {
             <Grid
               container
               style={{
-                justifyContent: "space-around",
+                justifyContent: "space-between",
                 // width: "100%",
                 // padding: 10,
               }}
             >
-              <Grid
-                item={true}
-                // container
-                xs={12}
-                md={6}
-                style={{
-                  padding: 10,
-                }}
-              >
-                {Platform.OS === "web" ? <FileList fileType="image" /> : null}
-              </Grid>
+              {files.some((file) => file.category === "image") && (
+                <Grid
+                  item={true}
+                  // container
+                  xs={12}
+                  md={6}
+                  style={{
+                    padding: 10,
+                  }}
+                >
+                  <FileList fileType="image" />
+                </Grid>
+              )}
+              {files.some((file) => file.category === "video") && (
+                <Grid
+                  // item={true}
+                  item={true}
+                  xs={12}
+                  md={6}
+                  style={{
+                    padding: 10,
+                  }}
+                >
+                  <FileList fileType="video" />
+                </Grid>
+              )}
+              {/* </Grid> */}
 
-              <Grid
-                // item={true}
-                item={true}
-                xs={12}
-                md={6}
-                style={{
-                  padding: 10,
-                }}
-              >
-                {Platform.OS === "web" ? <FileList fileType="video" /> : null}
-              </Grid>
-            </Grid>
-            {/* // third row */}
-
-            <Grid
+              {/* <Grid
               container
               style={{
                 justifyContent: "space-around",
                 // width: "100%",
                 // padding: 10,
               }}
-            >
-              <Grid
-                // item={true}
-                item={true}
-                xs={12}
-                md={6}
-                style={{
-                  padding: 10,
-                }}
-              >
-                {Platform.OS === "web" ? <FileList fileType="text" /> : null}
-              </Grid>
+            > */}
+              {files.some((file) => file.category === "text") && (
+                <Grid
+                  // item={true}
+                  item={true}
+                  xs={12}
+                  md={6}
+                  style={{
+                    padding: 10,
+                  }}
+                >
+                  <FileList fileType="text" />
+                </Grid>
+              )}
+              {files.some((file) => file.category === "audio") && (
+                <Grid
+                  // item={true}
+                  item={true}
+                  xs={12}
+                  md={6}
+                  style={{
+                    padding: 10,
+                  }}
+                >
+                  <FileList fileType={"audio"} />
+                </Grid>
+              )}
+              {/* </Grid> */}
 
-              <Grid
-                // item={true}
-                item={true}
-                xs={12}
-                md={6}
-                style={{
-                  padding: 10,
-                }}
-              >
-                {Platform.OS === "web" ? <FileList fileType="audio" /> : null}
-              </Grid>
-            </Grid>
-            {/* // fourth row */}
-
-            <Grid
+              {/* <Grid
               container
               style={{
                 justifyContent: "space-around",
                 // width: "100%",
                 // padding: 10,
               }}
-            >
-              <Grid
-                // item={true}
-                item={true}
-                xs={12}
-                md={6}
-                style={{
-                  padding: 10,
-                }}
-              >
-                {Platform.OS === "web" ? <FileList fileType="file" /> : null}
-              </Grid>
+            > */}
 
-              <Grid
-                // item={true}
-                item={true}
-                xs={12}
-                md={6}
-                style={{
-                  padding: 10,
-                }}
-              >
-                {Platform.OS === "web" ? <FileList fileType="misc" /> : null}
-              </Grid>
+              {files.some((file) => file.category === "file") && (
+                <Grid
+                  // item={true}
+                  item={true}
+                  xs={12}
+                  md={6}
+                  style={{
+                    padding: 10,
+                  }}
+                >
+                  <FileList fileType="file" />
+                </Grid>
+              )}
+              {files.some((file) => file.category === "misc") && (
+                <Grid
+                  // item={true}
+                  item={true}
+                  xs={12}
+                  md={6}
+                  style={{
+                    padding: 10,
+                  }}
+                >
+                  <FileList fileType="misc" />
+                </Grid>
+              )}
             </Grid>
           </Grid>
         </PaperProvider>
