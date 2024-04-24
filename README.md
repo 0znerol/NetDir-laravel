@@ -1,9 +1,12 @@
+# NetDir
+## start the app:
+```
 install node
 
 install php and composer
-
-start the app:
-  
+```
+## pull code
+  ```
   cd NDServer
 
   composer install 
@@ -36,3 +39,4 @@ start the app:
   npm run web
   
   open the page via {your ip}:4444 not localhost
+```
