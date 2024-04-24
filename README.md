@@ -29,6 +29,8 @@ clone repo
     APP_DEBUG=true
     APP_URL=http://{your ip address}:8000
     ]
+
+    
     ```
   migrate database:
   ```
