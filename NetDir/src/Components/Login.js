@@ -35,9 +35,7 @@ const Login = () => {
     try {
       if (!localStorage.getItem("logged_user")) {
         const response = await axios.post(
-          Register
-            ? "http://192.168.1.95:8000/register"
-            : "http://192.168.1.95:8000/login",
+          Register ? "/register" : "/login",
           Register ? RegisterUser : LoginUser,
           {
             headers: {
