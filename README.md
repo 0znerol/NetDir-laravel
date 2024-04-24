@@ -19,6 +19,7 @@ clone repo
   ```
   .env:
     ```
+    [
     APP_NAME=Laravel
     APP_ENV=local
     APP_KEY=
@@ -27,6 +28,7 @@ clone repo
     FRONTEND_URL=http://{your ip address}:4444
     APP_DEBUG=true
     APP_URL=http://{your ip address}:8000
+    ]
     ```
   migrate database:
   ```
