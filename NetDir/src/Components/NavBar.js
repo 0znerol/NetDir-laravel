@@ -82,11 +82,10 @@ export default function NavBar() {
     try {
       if (localStorage.getItem("logged_user")) {
         // await axios.get("/sanctum/csrf-cookie");
-        await axios.post("/logout");
-
         localStorage.removeItem("logged_user");
         localStorage.removeItem("displayedVideo");
         localStorage.removeItem("displayedImage");
+        await axios.post("/logout");
       }
       navigate("/");
       setOpenDots(false);

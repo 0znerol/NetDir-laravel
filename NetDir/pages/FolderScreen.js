@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Grid } from "@mui/material";
 import { accent, border, background, nDark } from "../src/variables/Colors";
 import AddFolder from "../src/Components/AddFolder";
-import { Platform, Pressable, Text } from "react-native";
+import { Animated, Platform, Pressable, Text } from "react-native";
 import { Card } from "react-native-paper";
 import AllFolders from "../src/Components/AllFolders";
 import { fetchFilesDb, fetchFoldersDb } from "../redux/slices/FileSlice";
@@ -13,6 +13,30 @@ export default function FolderScreen() {
   const [resetPosition, setResetPosition] = useState(false);
   const folders = useSelector((state) => state.allFiles.folders);
   const files = useSelector((state) => state.allFiles.value);
+  const translateDown = useRef(new Animated.Value(0)).current;
+  const translateUp = useRef(new Animated.Value(0)).current;
+
+  const translateOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.timing(translateDown, {
+      toValue: 20,
+      duration: 1000, // duration of the animation in milliseconds
+      useNativeDriver: true, // use native driver for better performance
+    }).start();
+    Animated.timing(translateUp, {
+      toValue: -20,
+      duration: 1000, // duration of the animation in milliseconds
+      useNativeDriver: true, // use native driver for better performance
+    }).start();
+
+    Animated.timing(translateOpacity, {
+      toValue: 1,
+      duration: 1500, // duration of the animation in milliseconds
+      useNativeDriver: true, // use native driver for better performance
+    }).start();
+  }, []);
+
   useEffect(() => {
     if (folders.length === 0 || files.length === 0) {
       dispatch(fetchFoldersDb());
@@ -66,6 +90,9 @@ export default function FolderScreen() {
                 borderColor: border,
                 margin: 10,
                 // width: "100%",
+                top: -20,
+                opacity: translateOpacity,
+                transform: [{ translateY: translateDown }],
               }}
             >
               <Card.Content style={{ padding: 0, paddingBottom: 10 }}>
@@ -92,37 +119,47 @@ export default function FolderScreen() {
               width: "100%",
             }}
           >
-            <Pressable
-              style={{
-                backgroundColor: accent,
-                borderRadius: 5,
-                padding: 5,
-                // margin: 20,
-                // marginLeft: 85,
-              }}
-              onPress={() => {
-                setResetPosition(true);
-              }}
-            >
-              <Text
+            <Animated.View style={{ opacity: translateOpacity }}>
+              <Pressable
                 style={{
-                  fontSize: 15,
-                  // fontWeight: "bold",
+                  backgroundColor: accent,
+                  borderRadius: 5,
+                  padding: 5,
+                  // margin: 20,
+                  // marginLeft: 85,
+                }}
+                onPress={() => {
+                  setResetPosition(true);
                 }}
               >
-                reset position
-              </Text>
-            </Pressable>
+                <Text
+                  style={{
+                    fontSize: 15,
+                    // fontWeight: "bold",
+                  }}
+                >
+                  reset position
+                </Text>
+              </Pressable>
+            </Animated.View>
           </Grid>
-          <Grid
-            container
+          <Animated.View
             style={{
-              width: "100%",
-              justifyContent: "center",
+              top: 20,
+              opacity: translateOpacity,
+              transform: [{ translateY: translateUp }],
             }}
           >
-            <AllFolders resetCheck={resetPosition} />
-          </Grid>
+            <Grid
+              container
+              style={{
+                width: "100%",
+                justifyContent: "center",
+              }}
+            >
+              <AllFolders resetCheck={resetPosition} />
+            </Grid>
+          </Animated.View>
           {/* <V2Example></V2Example> */}
         </Grid>
       </Grid>

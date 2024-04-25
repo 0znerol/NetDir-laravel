@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { Grid } from "@mui/material";
 import { Card } from "react-native-paper";
-import { Text } from "react-native";
+import { Animated, Text } from "react-native";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import { IconButton } from "@mui/material";
 import { useState } from "react";
@@ -28,6 +28,27 @@ export default function GalleryScreen() {
   // console.log(window.innerWidth);
   const DisplayNoneTime = 190;
   const GridTransitionTime = 40; // *6 = 240ms
+
+  const translateLeft = useRef(new Animated.Value(0)).current;
+  const translateRight = useRef(new Animated.Value(0)).current;
+  const translateOpacity = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.timing(translateLeft, {
+      toValue: -20,
+      duration: 1000, // duration of the animation in milliseconds
+      useNativeDriver: true, // use native driver for better performance
+    }).start();
+    Animated.timing(translateRight, {
+      toValue: 20,
+      duration: 1000, // duration of the animation in milliseconds
+      useNativeDriver: true, // use native driver for better performance
+    }).start();
+    Animated.timing(translateOpacity, {
+      toValue: 1,
+      duration: 1500, // duration of the animation in milliseconds
+      useNativeDriver: true, // use native driver for better performance
+    }).start();
+  }, []);
 
   useEffect(() => {
     if (enlargeL) {
@@ -161,6 +182,10 @@ export default function GalleryScreen() {
             height: "fit-content",
             alignSelf: "center",
             zIndex: 2,
+            maxHeight: "90vh",
+            right: 20,
+            opacity: translateOpacity,
+            transform: [{ translateX: translateRight }],
           }}
         >
           <Card.Content
@@ -228,6 +253,9 @@ export default function GalleryScreen() {
             borderColor: border,
             margin: 10,
             height: "fit-content",
+            right: -20,
+            opacity: translateOpacity,
+            transform: [{ translateX: translateLeft }],
           }}
         >
           <Card.Content

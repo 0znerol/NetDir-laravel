@@ -129,6 +129,7 @@ export default function ImageCarousel() {
                 alignItems: "center",
                 display: "flex",
                 width: "100%",
+                maxHeight: "90vh",
               }}
             >
               {imageFiles.map((file, index) => (
@@ -138,6 +139,7 @@ export default function ImageCarousel() {
                     width: "100%",
                     height: "100%",
                     display: index === displayedImage ? "block" : "none",
+                    maxHeight: "90vh",
                   }}
                   href={
                     index === displayedImage
@@ -155,8 +157,8 @@ export default function ImageCarousel() {
                     alt="Loading..."
                     style={{
                       width: "inherit",
-                      height: "100%",
-                      objectFit: "cover",
+                      height: "inherit",
+                      // objectFit: "contain",
                       // opacity: loadedImages.includes(index) ? 1 : 0,
                       transition: "opacity 0.5s",
                       position:
@@ -165,6 +167,9 @@ export default function ImageCarousel() {
                       // left: index === displayedImage ? 0 : 10000000,
                       // left: 0,
                       display: index === displayedImage ? "block" : "none",
+                      maxHeight: "90vh",
+                      maxWidth: "80em",
+                      margin: "auto",
                     }}
                     data-index={index}
                     // ref={(el) => {

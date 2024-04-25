@@ -9,6 +9,7 @@ import { addFolder } from "../../redux/slices/FileSlice";
 import { useEffect, useState } from "react";
 import { fetchFoldersDb } from "../../redux/slices/FileSlice";
 import axios from "../api/axios";
+import { host } from "../variables/Network";
 export default function AddFolder() {
   const dispatch = useDispatch();
   const folders = useSelector((state) => state.allFiles.folders);
@@ -32,7 +33,7 @@ export default function AddFolder() {
       console.log(formData);
       // await axios.get("/sanctum/csrf-cookie");
       await axios
-        .post("http://192.168.1.95:8000/api/addFolder", formData, {
+        .post(`http://${host}:8000/api/addFolder`, formData, {
           headers: {
             "Content-type": "multipart/form-data",
           },

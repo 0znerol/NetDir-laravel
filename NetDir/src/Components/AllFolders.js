@@ -12,6 +12,7 @@ import { accent, border, background, nDark } from "../variables/Colors";
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material";
 import Draggable from "react-draggable";
 import axios from "../api/axios";
+import { host } from "../variables/Network";
 
 export default function AllFolders() {
   const dispatch = useDispatch();
@@ -105,7 +106,7 @@ export default function AllFolders() {
                             try {
                               await axios.get("/sanctum/csrf-cookie");
                               const response = await axios.delete(
-                                `http://192.168.1.95:8000/api/deleteFolder/${folder.id}`
+                                `/api/deleteFolder/${folder.id}`
                               );
                               dispatch(fetchFoldersDb());
                               return response.data;
@@ -156,15 +157,11 @@ export default function AllFolders() {
                               formData.append("folderName", e.target.name);
                               await axios.get("/sanctum/csrf-cookie");
                               await axios
-                                .post(
-                                  "http://192.168.1.95:8000/api/addFileInFolder",
-                                  formData,
-                                  {
-                                    headers: {
-                                      "Content-type": "multipart/form-data",
-                                    },
-                                  }
-                                )
+                                .post(`/api/addFileInFolder`, formData, {
+                                  headers: {
+                                    "Content-type": "multipart/form-data",
+                                  },
+                                })
                                 .then((response) => {
                                   dispatch(fetchFilesDb());
                                 })

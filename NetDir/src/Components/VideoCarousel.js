@@ -105,6 +105,9 @@ export default function VideoCarousel() {
                 // alignItems: "center",
                 display: "flex",
                 height: "100%",
+                maxHeight: "90vh",
+                maxWidth: "80em",
+                margin: "auto",
               }}
             >
               <video

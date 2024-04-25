@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Grid } from "@mui/material";
 import { Card } from "react-native-paper";
-import { Platform } from "react-native";
+import { Animated, Platform } from "react-native";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { PaperProvider, DarkTheme, DefaultTheme } from "react-native-paper";
 import store from "../redux/store";
@@ -14,8 +14,30 @@ import { fetchFilesDb } from "../redux/slices/FileSlice";
 export default function HomeScreen() {
   const dispatch = useDispatch();
   const files = useSelector((state) => state.allFiles.value);
+  const translateLeft = useRef(new Animated.Value(0)).current;
+  const translateRight = useRef(new Animated.Value(0)).current;
+  const translateOpacity = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     if (files.length === 0) dispatch(fetchFilesDb());
+  }, []);
+
+  useEffect(() => {
+    Animated.timing(translateLeft, {
+      toValue: -20,
+      duration: 1000, // duration of the animation in milliseconds
+      useNativeDriver: true, // use native driver for better performance
+    }).start();
+    Animated.timing(translateRight, {
+      toValue: 20,
+      duration: 1000, // duration of the animation in milliseconds
+      useNativeDriver: true, // use native driver for better performance
+    }).start();
+    Animated.timing(translateOpacity, {
+      toValue: 1,
+      duration: 1500, // duration of the animation in milliseconds
+      useNativeDriver: true, // use native driver for better performance
+    }).start();
   }, []);
   // const [darkTheme, setDarkTheme] = useState(true);
   return (
@@ -34,7 +56,7 @@ export default function HomeScreen() {
         <PaperProvider theme={DarkTheme}>
           <Grid container>
             <Grid container>
-              <Grid item={true} xs={12} md={6}>
+              <Grid item={true} xs={12} md={8} lg={6}>
                 {Platform.OS === "web" ? (
                   <Card
                     style={{
@@ -42,7 +64,10 @@ export default function HomeScreen() {
                       borderWidth: 3,
                       borderColor: border,
                       margin: 10,
-                      backgroundColor: background,
+                      // backgroundColor: background,
+                      right: 20,
+                      opacity: translateOpacity,
+                      transform: [{ translateX: translateRight }],
                     }}
                   >
                     <Card.Content>
@@ -54,7 +79,8 @@ export default function HomeScreen() {
 
               <Grid
                 item={true}
-                md={6}
+                md={4}
+                lg={6}
                 style={{
                   width: "100%",
                 }}
@@ -79,7 +105,10 @@ export default function HomeScreen() {
                         borderColor: border,
                         margin: 10,
                         width: "fit-content",
-                        backgroundColor: background,
+                        // backgroundColor: background,
+                        right: -20,
+                        opacity: translateOpacity,
+                        transform: [{ translateX: translateLeft }],
                       }}
                     >
                       <Card.Content>{<TotalFiles />}</Card.Content>
@@ -93,7 +122,10 @@ export default function HomeScreen() {
                         borderWidth: 3,
                         borderColor: border,
                         margin: 10,
-                        backgroundColor: background,
+                        // backgroundColor: background,
+                        right: -20,
+                        opacity: translateOpacity,
+                        transform: [{ translateX: translateLeft }],
                       }}
                     >
                       <Card.Content>{<UploadFile />}</Card.Content>
@@ -121,9 +153,22 @@ export default function HomeScreen() {
                   md={6}
                   style={{
                     padding: 10,
+                    position: "relative",
                   }}
                 >
-                  <FileList fileType="image" />
+                  <Card
+                    style={{
+                      // backgroundColor: background,
+                      borderRadius: 4,
+                      border: "3px solid " + border,
+                      opacity: translateOpacity,
+                      right: 20,
+                      transform: [{ translateX: translateRight }],
+                      paddingHorizontal: 10,
+                    }}
+                  >
+                    <FileList fileType="image" />
+                  </Card>
                 </Grid>
               )}
               {files.some((file) => file.category === "video") && (
@@ -136,7 +181,18 @@ export default function HomeScreen() {
                     padding: 10,
                   }}
                 >
-                  <FileList fileType="video" />
+                  <Card
+                    style={{
+                      opacity: translateOpacity,
+                      right: -20,
+                      transform: [{ translateX: translateLeft }],
+                      borderRadius: 4,
+                      border: "3px solid " + border,
+                      paddingHorizontal: 10,
+                    }}
+                  >
+                    <FileList fileType="video" />
+                  </Card>
                 </Grid>
               )}
               {/* </Grid> */}
@@ -159,7 +215,18 @@ export default function HomeScreen() {
                     padding: 10,
                   }}
                 >
-                  <FileList fileType="text" />
+                  <Card
+                    style={{
+                      opacity: translateOpacity,
+                      right: 20,
+                      transform: [{ translateX: translateRight }],
+                      borderRadius: 4,
+                      border: "3px solid " + border,
+                      paddingHorizontal: 10,
+                    }}
+                  >
+                    <FileList fileType="text" />
+                  </Card>
                 </Grid>
               )}
               {files.some((file) => file.category === "audio") && (
@@ -172,7 +239,18 @@ export default function HomeScreen() {
                     padding: 10,
                   }}
                 >
-                  <FileList fileType={"audio"} />
+                  <Card
+                    style={{
+                      opacity: translateOpacity,
+                      right: -20,
+                      transform: [{ translateX: translateLeft }],
+                      borderRadius: 4,
+                      border: "3px solid " + border,
+                      paddingHorizontal: 10,
+                    }}
+                  >
+                    <FileList fileType={"audio"} />
+                  </Card>
                 </Grid>
               )}
               {/* </Grid> */}
@@ -196,7 +274,18 @@ export default function HomeScreen() {
                     padding: 10,
                   }}
                 >
-                  <FileList fileType="file" />
+                  <Card
+                    style={{
+                      opacity: translateOpacity,
+                      right: 20,
+                      transform: [{ translateX: translateRight }],
+                      borderRadius: 4,
+                      border: "3px solid " + border,
+                      paddingHorizontal: 10,
+                    }}
+                  >
+                    <FileList fileType="file" />
+                  </Card>
                 </Grid>
               )}
               {files.some((file) => file.category === "misc") && (
@@ -209,7 +298,18 @@ export default function HomeScreen() {
                     padding: 10,
                   }}
                 >
-                  <FileList fileType="misc" />
+                  <Card
+                    style={{
+                      opacity: translateOpacity,
+                      right: -20,
+                      transform: [{ translateX: translateLeft }],
+                      borderRadius: 4,
+                      border: "3px solid " + border,
+                      paddingHorizontal: 10,
+                    }}
+                  >
+                    <FileList fileType="misc" />
+                  </Card>
                 </Grid>
               )}
             </Grid>

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Text, Pressable, Dimensions } from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { Text, Pressable, Dimensions, Animated } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchFilesDb, deleteFile } from "../../redux/slices/FileSlice";
 import Grid from "@mui/material/Unstable_Grid2/Grid2";
@@ -9,19 +9,51 @@ import CreateIcon from "@mui/icons-material/Create";
 import SaveIcon from "@mui/icons-material/Save";
 import axios from "../api/axios";
 import { host } from "../variables/Network";
-import { Card } from "@mui/material";
+import { Card, useMediaQuery, useTheme } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import ScaleIcon from "@mui/icons-material/Scale";
 
-function FileList({ fileType }) {
+function FileList({ fileType, sort = "name" }) {
   const dispatch = useDispatch();
+  const theme = useTheme();
+
+  const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const windowWidth = Dimensions.get("window").width;
   const searchFile = useSelector((state) => state.allFiles.search);
   const files = useSelector((state) => state.allFiles.value);
-
+  const [sizeModal, setSizeModal] = useState(false);
+  const [dateModal, setDateModal] = useState(false);
   const [fileName, setFileName] = useState("");
   const [modOpen, setModOpen] = useState(false);
-  const [modId, setModId] = useState(0);
   const [search, setSearch] = useState("");
+  const [modId, setModId] = useState(0);
+
+  const [infoId, setInfoId] = useState(null);
+
+  const translateLeft = useRef(new Animated.Value(0)).current;
+  const translateRight = useRef(new Animated.Value(0)).current;
+  const translateOpacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    setTimeout(() => {
+      Animated.timing(translateLeft, {
+        toValue: -20,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start();
+      Animated.timing(translateRight, {
+        toValue: 20,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start();
+      Animated.timing(translateOpacity, {
+        toValue: 1,
+        duration: 1000,
+        useNativeDriver: true,
+      }).start();
+    }, 1000);
+  }, []);
 
   // useEffect(() => {
   //   dispatch(fetchFilesDb());
@@ -95,7 +127,19 @@ function FileList({ fileType }) {
 
   switch (fileType) {
     case "/":
-      return renderSearchFiles(search, files);
+      return renderSearchFiles(
+        search,
+        files,
+        sort,
+        formatBytes,
+        isSmallScreen,
+        sizeModal,
+        setSizeModal,
+        dateModal,
+        setDateModal,
+        infoId,
+        setInfoId
+      );
     default:
       return renderCategoryFiles(
         files,
@@ -110,61 +154,215 @@ function FileList({ fileType }) {
         fileName,
         setFileName,
         formatBytes,
-        windowWidth
+        windowWidth,
+        translateLeft,
+        translateRight,
+        translateOpacity
       );
   }
 }
-const renderSearchFiles = (search, files) => (
-  <Grid key={7} style={{ height: "100vh", paddingTop: 10 }}>
-    {files.map((file, index) => {
-      if (
-        search.toLowerCase() === "" ||
-        file.file_name.toLowerCase().includes(search.toLowerCase())
-      ) {
-        return (
-          <Grid
-            container
-            key={index}
-            style={{
-              borderBottom: "2px solid" + border,
-            }}
-          >
+
+const renderSearchFiles = (
+  search,
+  files,
+  sort,
+  formatBytes,
+  isSmallScreen,
+  sizeModal,
+  setSizeModal,
+  dateModal,
+  setDateModal,
+  infoId,
+  setInfoId
+) => {
+  const sortedFiles = [...files].sort((a, b) => {
+    switch (sort) {
+      case "dateAsc":
+        return new Date(a.created_at) - new Date(b.created_at);
+      case "dateDes":
+        return new Date(b.created_at) - new Date(a.created_at);
+      case "name":
+        return b.file_name.localeCompare(a.file_name);
+      case "largest":
+        return b.file_size - a.file_size;
+      case "smallest":
+        return a.file_size - b.file_size;
+      default:
+        return 0;
+    }
+  });
+
+  return (
+    <Grid key={7} style={{ height: "100vh", paddingTop: 10, width: "100%" }}>
+      {sortedFiles.map((file, index) => {
+        if (
+          search.toLowerCase() === "" ||
+          file.file_name.toLowerCase().includes(search.toLowerCase())
+        ) {
+          console.log(file.created_at);
+          return (
             <Grid
-              item="true"
-              xs={12}
-              style={{ textAlign: "center", margin: 15 }}
+              container
+              key={index}
+              style={{
+                borderBottom: "2px solid" + border,
+                padding: 10,
+              }}
             >
-              <a
-                href={`http://${host}:8000/storage/app/public/user_${
-                  JSON.parse(localStorage.getItem("logged_user")).id
-                }/${file.file_location}/${file.file_name}`}
-                target="_blank"
-                style={{
-                  textDecorationColor: accent,
-                  textDecorationThickness: 3,
-                  textDecorationLine: "underline",
-                }}
+              <Grid
+                item="true"
+                xs={2}
+                style={{ textAlign: "center", alignSelf: "center" }}
               >
-                <Text
+                {isSmallScreen ? (
+                  <>
+                    <CalendarMonthIcon
+                      style={{
+                        color: "lightgray",
+                        fontSize: "1.5em",
+                        margin: "auto",
+                        padding: 5,
+                        border: "2px solid" + accent,
+                        borderRadius: 5,
+                        cursor: "pointer",
+                      }}
+                      onClick={() => {
+                        setSizeModal(false);
+
+                        if (file.id === infoId) {
+                          setDateModal(!dateModal);
+                        } else {
+                          setDateModal(true);
+                          setInfoId(file.id);
+                        }
+                      }}
+                    />
+                  </>
+                ) : (
+                  <Text
+                    style={{
+                      color: "lightgray",
+                      fontSize: "1em",
+                      margin: "auto",
+                    }}
+                  >
+                    {file.created_at.slice(0, 10) +
+                      " " +
+                      file.created_at.slice(11, 19)}
+                  </Text>
+                )}
+                {dateModal && file.id === infoId ? (
+                  <Grid
+                    container
+                    style={{
+                      position: "absolute",
+                      backgroundColor: nDark,
+                      border: "2px solid " + accent,
+                      borderRadius: 5,
+                      zIndex: 100,
+                    }}
+                  >
+                    <Text style={{ color: "lightgrey", padding: 5 }}>
+                      {file.created_at.slice(0, 10) +
+                        " " +
+                        file.created_at.slice(11, 19)}
+                    </Text>
+                  </Grid>
+                ) : null}
+              </Grid>
+              <Grid
+                item="true"
+                xs={8}
+                style={{ textAlign: "center", alignContent: "center" }}
+              >
+                <a
+                  href={`http://${host}:8000/api/show/${file.id}`}
+                  target="_blank"
                   style={{
-                    color: "lightgray",
-                    fontSize: "1.5em",
-                    // align: "center",
+                    textDecorationColor: accent,
+                    textDecorationThickness: 3,
+                    textDecorationLine: "underline",
                     margin: "auto",
-                    // padding: 30,
+                    alignContent: "center",
                   }}
                 >
-                  {file.file_name}
-                </Text>
-              </a>
+                  <Text
+                    style={{
+                      color: "lightgray",
+                      fontSize: "1.5em",
+                      // align: "center",
+                      margin: "auto",
+                      // padding: 30,
+                    }}
+                  >
+                    {file.file_name}
+                  </Text>
+                </a>
+              </Grid>
+              <Grid
+                item="true"
+                xs={2}
+                style={{ textAlign: "center", alignContent: "center" }}
+              >
+                {isSmallScreen ? (
+                  <ScaleIcon
+                    style={{
+                      color: "lightgray",
+                      fontSize: "1.5em",
+                      margin: "auto",
+                      padding: 5,
+                      border: "2px solid" + accent,
+                      borderRadius: 5,
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      setDateModal(false);
+                      if (file.id === infoId) {
+                        setSizeModal(!sizeModal);
+                      } else {
+                        setSizeModal(true);
+                        setInfoId(file.id);
+                      }
+                    }}
+                  />
+                ) : (
+                  <Text
+                    style={{
+                      color: "lightgray",
+                      fontSize: "1em",
+                      // align: "center",
+                      margin: "auto",
+                      // padding: 30,
+                    }}
+                  >
+                    {formatBytes(file.file_size)}
+                  </Text>
+                )}
+                {sizeModal && file.id === infoId ? (
+                  <Grid
+                    container
+                    style={{
+                      position: "absolute",
+                      backgroundColor: nDark,
+                      border: "2px solid " + accent,
+                      borderRadius: 5,
+                      zIndex: 100,
+                    }}
+                  >
+                    <Text style={{ color: "lightgrey", padding: 5 }}>
+                      {formatBytes(file.file_size)}
+                    </Text>
+                  </Grid>
+                ) : null}
+              </Grid>
             </Grid>
-          </Grid>
-        );
-      }
-      return null;
-    })}
-  </Grid>
-);
+          );
+        }
+        return null;
+      })}
+    </Grid>
+  );
+};
 
 const renderCategoryFiles = (
   files,
@@ -178,23 +376,29 @@ const renderCategoryFiles = (
   setModId,
   fileName,
   setFileName,
-  formatBytes
+  formatBytes,
+  translateLeft,
+  translateRight,
+  translateOpacity
 ) =>
   files.filter((file) => file.category === fileType).length > 0 ? (
     <ul
       style={{
         padding: 0,
+        height: "100%",
       }}
     >
       <Grid
         style={{
           justifyContent: "center",
-          borderRadius: 4,
-          borderWidth: 3,
-          borderColor: border,
-          borderStyle: "solid",
-          padding: 10,
+          // borderRadius: 4,
+          // borderWidth: 3,
+          // borderColor: border,
+          // borderStyle: "solid",
+          // padding: 10,
+          height: "100%",
           width: "100%",
+
           // margin: 5,
         }}
       >
