@@ -12,7 +12,7 @@ clone repo
   git clone https://github.com/0znerol/NetDir-laravel.git
   ```
   ```
-  cd NDServer
+  cd NetDir-laravel
   ```
   install php dependencies:
   ```
